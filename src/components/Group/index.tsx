@@ -11,15 +11,7 @@ export const QuestionGroup = () => {
     queryKey: ["group"],
     queryFn: getQuestionGroupListAction,
   })
-  const groups =
-    data?.data?.map((item) => {
-      return {
-        ...item.question_group,
-        questions: Array.isArray(item.question_to_group)
-          ? item.question_to_group
-          : [],
-      }
-    }) || []
+  console.log(data, "data")
 
   return (
     <Card className="w-full rounded-2xl">
@@ -35,7 +27,11 @@ export const QuestionGroup = () => {
         </div>
       </CardHeader>
       <CardContent>
-        {isPending ? <GroupSkeleton /> : <GroupList groups={groups} />}
+        {isPending ? (
+          <GroupSkeleton />
+        ) : (
+          <GroupList groups={data?.data || []} />
+        )}
       </CardContent>
     </Card>
   )

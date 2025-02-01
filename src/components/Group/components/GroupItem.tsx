@@ -2,15 +2,13 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import type { questionToGroup } from "@/database/schema"
 import { cn } from "@/lib/utils"
+import type { Group } from "@/types/group"
 import { QuestionGroupStatus } from "@/types/question"
 
+type QuestionToGroup = typeof questionToGroup.$inferSelect
+
 interface GroupItemProps {
-  id: string
-  name: string
-  description: string | null
-  status: QuestionGroupStatus
-  tag: string[]
-  questions: (typeof questionToGroup.$inferSelect)[]
+  group: Group
   onClick?: () => void
 }
 
@@ -26,18 +24,14 @@ const statusTextMap: Record<QuestionGroupStatus, string> = {
   completed: "已完成",
 }
 
-export const GroupItem = ({
-  name,
-  description,
-  status,
-  tag,
-  questions,
-  onClick,
-}: GroupItemProps) => {
-  const totalQuestions = questions.length
-  const completedQuestions = questions.filter(
-    (question) => question.isCompleted
-  ).length
+export const GroupItem = ({ group, onClick }: GroupItemProps) => {
+  const { name, description, status, tag, questionCount, questionToGroup } =
+    group
+  const totalQuestions = questionCount
+  const completedQuestions = Array.isArray(questionToGroup)
+    ? questionToGroup.filter((item: QuestionToGroup) => item.isCompleted).length
+    : 0
+
   const progress =
     totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0
 
@@ -70,9 +64,9 @@ export const GroupItem = ({
               </Badge>
             </div>
             <div className="flex items-center gap-1">
-              {tag.map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
+              {tag.map((t) => (
+                <Badge key={t} variant="outline" className="text-xs">
+                  {t}
                 </Badge>
               ))}
             </div>

@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import {
   FolderOpen,
@@ -17,6 +23,8 @@ import {
   Users,
   UserSquare,
   type LucideProps,
+  BookIcon,
+  BookOpen,
 } from "lucide-react"
 import type { ForwardRefExoticComponent, RefAttributes } from "react"
 import type { Folder } from "@/types/folder"
@@ -59,7 +67,7 @@ const BaseFileTree = ({
     <div
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between p-1 rounded-lg hover:bg-gray-100 group",
+        "flex items-center justify-between p-1 rounded-lg hover:bg-gray-100 group min-h-[36px]",
         {
           "bg-muted": isActive,
         },
@@ -67,59 +75,70 @@ const BaseFileTree = ({
       )}
     >
       <div
-        className="flex items-center gap-2 flex-1 cursor-pointer"
+        className="flex items-center gap-2 flex-1 cursor-pointer min-w-0"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => e.key === "Enter" && onClick()}
         aria-label={`选择${name}`}
       >
         {isActive ? (
-          <ActiveIcon className="w-5 h-5 text-primary" />
+          <ActiveIcon className="w-5 h-5 text-primary flex-shrink-0" />
         ) : (
-          <Icon className="w-5 h-5 text-primary" />
+          <Icon className="w-5 h-5 text-primary flex-shrink-0" />
         )}
-        <div className="text-sm font-medium truncate max-w-[120px]">{name}</div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="text-sm font-medium truncate">{name}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{name}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {count !== undefined && (
-          <div className="text-xs text-gray-500 ml-auto">{count}</div>
+          <div className="text-xs text-gray-500 ml-auto flex-shrink-0">
+            {count}
+          </div>
         )}
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className={cn(
-              "h-8 w-8 p-0 opacity-0  focus-visible:!outline-transparent focus-visible:ring-offset-0 focus:border-none",
-              {
-                "group-hover:opacity-100":
-                  id !== unClassifiedFolderId && id !== "",
-              }
-            )}
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              onEdit()
-            }}
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            编辑
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete()
-            }}
-            className="text-red-600 focus:text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            删除
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex-shrink-0 w-8">
+        {id !== unClassifiedFolderId && id !== "" && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity focus-visible:!outline-transparent focus-visible:ring-offset-0 focus:border-none"
+                )}
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit()
+                }}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                编辑
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete()
+                }}
+                className="text-red-600 focus:text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                删除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   )
 }
@@ -188,8 +207,8 @@ export const GroupTree = ({
       onClick={onClick}
       onEdit={onEdit}
       onDelete={onDelete}
-      icon={UserSquare}
-      activeIcon={Users}
+      icon={BookIcon}
+      activeIcon={BookIcon}
       count={group.questionCount}
       className={className}
     />

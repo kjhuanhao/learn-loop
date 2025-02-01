@@ -44,6 +44,19 @@ export const getQuestionGroupListAction = async () => {
         .select({
           question_group: questionGroup,
           questionCount: sql<number>`count(${questionToGroup.questionId})::int`,
+          questions: sql<(typeof questionToGroup.$inferSelect)[]>`
+            json_agg(
+              CASE
+                WHEN ${questionToGroup.questionId} IS NOT NULL
+                THEN json_build_object(
+                  'questionId', ${questionToGroup.questionId},
+                  'groupId', ${questionToGroup.groupId},
+                  'isCompleted', ${questionToGroup.isCompleted},
+                  'createdAt', ${questionToGroup.createdAt}
+                )
+              END
+            ) FILTER (WHERE ${questionToGroup.questionId} IS NOT NULL)
+          `,
         })
         .from(questionGroup)
         .where(eq(questionGroup.userId, user.id))
@@ -51,22 +64,20 @@ export const getQuestionGroupListAction = async () => {
           questionToGroup,
           eq(questionGroup.id, questionToGroup.groupId)
         )
-        .groupBy(
-          questionGroup.id,
-          questionGroup.name,
-          questionGroup.createdAt,
-          questionGroup.updatedAt,
-          questionGroup.userId
-        )
+        .groupBy(questionGroup.id)
         .orderBy(desc(questionGroup.createdAt))
 
       return groups.map((group) => ({
         id: group.question_group.id,
         name: group.question_group.name,
+        description: group.question_group.description,
+        tag: group.question_group.tag,
         createdAt: group.question_group.createdAt,
         updatedAt: group.question_group.updatedAt,
         userId: group.question_group.userId,
+        status: group.question_group.status,
         questionCount: group.questionCount,
+        questionToGroup: group.questions || [],
       }))
     },
   })

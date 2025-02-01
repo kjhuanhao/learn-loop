@@ -29,6 +29,7 @@ import type {
 import type { Group } from "@/types/group"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowRight, Edit } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 import { updateQuestionAction } from "@/actions/question"
 import { useToast } from "@/hooks/use-toast"
@@ -102,12 +103,22 @@ export const createColumns = ({
       header: "类型",
       cell: ({ row }) => {
         const type = row.getValue("type") as QuestionType
-        const typeMap = {
-          [QuestionTypeEnum.SINGLE]: "单选题",
-          [QuestionTypeEnum.MULTIPLE]: "多选题",
-          [QuestionTypeEnum.TEXT]: "简答题",
+        const typeConfig = {
+          [QuestionTypeEnum.SINGLE]: { label: "单选题", variant: "default" },
+          [QuestionTypeEnum.MULTIPLE]: {
+            label: "多选题",
+            variant: "secondary",
+          },
+          [QuestionTypeEnum.TEXT]: { label: "简答题", variant: "outline" },
         }
-        return <div>{typeMap[type]}</div>
+        const config = typeConfig[type]
+        return (
+          <Badge
+            variant={config.variant as "default" | "secondary" | "outline"}
+          >
+            {config.label}
+          </Badge>
+        )
       },
     },
     {
@@ -115,26 +126,71 @@ export const createColumns = ({
       header: "掌握程度",
       cell: ({ row }) => {
         const level = row.getValue("masteryLevel") as QuestionMasteryLevel
-        const levelMap = {
-          [QuestionMasteryLevelEnum.BEGINNER]: "初学",
-          [QuestionMasteryLevelEnum.INTERMEDIATE]: "进阶",
-          [QuestionMasteryLevelEnum.PROFICIENCY]: "熟练",
-          [QuestionMasteryLevelEnum.EXPERTISE]: "精通",
+        const levelConfig = {
+          [QuestionMasteryLevelEnum.BEGINNER]: {
+            label: "初学",
+            variant: "secondary",
+          },
+          [QuestionMasteryLevelEnum.INTERMEDIATE]: {
+            label: "进阶",
+            variant: "default",
+          },
+          [QuestionMasteryLevelEnum.PROFICIENCY]: {
+            label: "熟练",
+            variant: "outline",
+          },
+          [QuestionMasteryLevelEnum.EXPERTISE]: {
+            label: "精通",
+            variant: "destructive",
+          },
         }
-        return <div>{levelMap[level]}</div>
+        const config = levelConfig[level]
+        return (
+          <Badge
+            variant={
+              config.variant as
+                | "default"
+                | "secondary"
+                | "outline"
+                | "destructive"
+            }
+          >
+            {config.label}
+          </Badge>
+        )
       },
     },
     {
       accessorKey: "reviewCount",
       header: "复习次数",
-      cell: ({ row }) => <div>{row.getValue("reviewCount")}</div>,
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-background">
+          {row.getValue("reviewCount")}
+        </Badge>
+      ),
     },
     {
       accessorKey: "groups",
       header: "所属计划题组",
       cell: ({ row }) => {
         const groups = row.getValue("groups") as QuestionGroup[]
-        return <div>{groups?.map((group) => group.name).join(", ") || "-"}</div>
+        return (
+          <div className="flex flex-wrap gap-1">
+            {groups?.length ? (
+              groups.map((group) => (
+                <Badge
+                  key={group.id}
+                  variant="secondary"
+                  className="bg-secondary/50"
+                >
+                  {group.name}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">-</span>
+            )}
+          </div>
+        )
       },
     },
     {

@@ -304,6 +304,49 @@ export const OperationPanel = ({
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    移动到文件夹
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {folders.map((folder) => (
+                    <DropdownMenuItem
+                      key={folder.id}
+                      onClick={() => {
+                        selectedQuestions.forEach((question) => {
+                          updateQuestion({
+                            id: question.id,
+                            title: question.title,
+                            content: question.content || {
+                              options: [],
+                              correct: [],
+                            },
+                            type: question.type,
+                            description: question.description || undefined,
+                            targetFolderId: folder.id,
+                            targetGroups:
+                              question.groups?.map((g) => g.id) || [],
+                          })
+                        })
+                        toast({
+                          title: "移动成功",
+                          description: `已将选中题目移动到 ${folder.name}`,
+                        })
+                        if (active === "folder") {
+                          refetchFolder()
+                        } else {
+                          refetchGroup()
+                        }
+                        setRowSelection({})
+                      }}
+                    >
+                      {folder.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           )}
           <Button variant="outline" size="icon">
