@@ -64,3 +64,7 @@ test-timings.json
 .env.sentry-build-plugin
 
 .env
+
+sentry.client.config.ts
+sentry.edge.config.ts
+sentry.server.config.ts
