@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 主背景和文字颜色 */
+    --background: 200 36% 98%; /* 浅蓝白色背景 */
+    --foreground: 200 71% 15%; /* 深蓝灰色文字 */
+
+    /* 明亮色彩变体 */
+    --color-primary-bright: 200 70% 55%; /* 明亮的蓝色 */
+    --color-secondary-bright: 160 55% 50%; /* 明亮的绿色 */
+    --color-accent-bright: 280 40% 60%; /* 明亮的紫色 */
+    --color-warning-bright: 35 85% 65%; /* 调整亮度从75%到65% */
+
+    /* 次要背景和文字 */
+    --muted: 200 5% 95%; /* 柔和的背景色 */
+    --muted-foreground: 200 8% 45%; /* 柔和的文字颜色 */
+
+    /* 弹出层样式 */
+    --popover: 200 36% 100%; /* 纯白色弹出层 */
+    --popover-foreground: 200 71% 15%; /* 弹出层文字颜色 */
+
+    /* 卡片样式 */
+    --card: 200 36% 100%; /* 纯白色卡片 */
+    --card-foreground: 200 71% 15%; /* 卡片文字颜色 */
+
+    /* 主色调卡片 - 蓝色系 */
+    --card-primary-background: 200 95% 97%; /* 超浅蓝背景 */
+    --card-primary-foreground: 200 57% 40%; /* 主蓝色文字 #2C7EA1 */
+    --card-primary-border: 200 57% 85%; /* 浅蓝边框 */
+    --card-primary-hover: 200 95% 95%; /* 悬浮背景 */
+
+    /* 次要色调卡片 - 绿色系 */
+    --card-primary-1-background: 160 95% 97%; /* 超浅绿背景 */
+    --card-primary-1-foreground: 160 40% 39%; /* 绿色文字 #3B8C6E */
+
+    /* 装饰色调卡片 - 紫色系 */
+    --card-primary-2-background: 280 95% 97%; /* 超浅紫背景 */
+    --card-primary-2-foreground: 280 29% 45%; /* 紫色文字 #7C5295 */
+
+    /* 警示色调卡片 - 黄色系 */
+    --card-primary-3-background: 35 95% 97%; /* 超浅黄背景 */
+    --card-primary-3-foreground: 35 75% 55%; /* 降低亮度和饱和度 */
+
+    /* 边框和输入框 */
+    --border: 200 13% 90%; /* 浅灰色边框 */
+    --input: 200 13% 90%; /* 输入框边框颜色 */
+
+    /* 主要强调色 - 使用学习蓝 */
+    --primary: 200 57% 40%; /* #2C7EA1 主蓝色 */
+    --primary-1: 200 57% 40%; /* 略亮的绿色 */
+    --primary-2: 160 40% 40%; /* 略亮的绿色 */
+    --primary-3: 280 29% 45%; /* 略亮的紫色 */
+    --primary-4: 35 80% 69%; /* 略亮的黄色 */
+
+    --primary-foreground: 0 0% 100%; /* 白色文字 */
+
+    /* 次要强调色 - 使用较浅蓝色 */
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --warning: 35 75% 55%; /* 降低亮度和饱和度，使其更柔和 */
+    --warning-foreground: 0 0% 100%;
+
+    /* 警告/错误色 */
+    --destructive: 0 84% 60%; /* 标准红色警告色 */
+    --destructive-foreground: 0 0% 100%;
+
+    /* 交互元素 */
+    --ring: 200 57% 40%; /* 使用主蓝色 */
+
+    /* 图表配色 */
+    --chart-1: 200 57% 40%; /* 主蓝 #2C7EA1 */
+    --chart-2: 160 40% 39%; /* 绿色 #3B8C6E */
+    --chart-3: 280 29% 45%; /* 紫色 #7C5295 */
+    --chart-4: 35 80% 69%; /* 黄色 #F0B86E */
+    --chart-5: 200 57% 50%; /* 亮蓝色变体 */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* 深色模式主背景和文字 */
+    --background: 200 30% 10%; /* 深蓝灰背景 */
+    --foreground: 200 29% 90%; /* 浅色文字 */
+
+    /* 深色模式明亮色彩变体 */
+    --color-primary-bright: 200 85% 65%; /* 更亮的蓝色 */
+    --color-secondary-bright: 160 70% 60%; /* 更亮的绿色 */
+    --color-accent-bright: 280 55% 70%; /* 更亮的紫色 */
+    --color-warning-bright: 35 90% 80%; /* 更亮的黄色 */
+
+    /* 深色模式次要背景和文字 */
+    --muted: 200 5% 15%; /* 深色柔和背景 */
+    --muted-foreground: 200 8% 70%; /* 浅色柔和文字 */
+
+    /* 深色模式弹出层 */
+    --popover: 200 30% 12%; /* 略深的背景 */
+    --popover-foreground: 200 29% 90%;
+
+    /* 深色模式卡片 */
+    --card: 200 30% 12%; /* 略深的背景 */
+    --card-foreground: 200 29% 90%;
+
+    /* 深色模式主色调卡片 - 蓝色系 */
+    --card-primary-background: 200 30% 15%; /* 深色背景 */
+    --card-primary-foreground: 200 57% 85%; /* 更亮的蓝色文字 */
+
+    /* 深色模式次要色调卡片 - 绿色系 */
+    --card-primary-1-background: 160 30% 15%; /* 深色背景 */
+    --card-primary-1-foreground: 160 40% 85%; /* 更亮的绿色文字 */
+
+    /* 深色模式装饰色调卡片 - 紫色系 */
+    --card-primary-2-background: 280 30% 15%; /* 深色背景 */
+    --card-primary-2-foreground: 280 29% 85%; /* 更亮的紫色文字 */
+    --card-accent-border: 280 29% 30%; /* 深色边框 */
+
+    /* 深色模式警示色调卡片 - 黄色系 */
+    --card-primary-3-background: 35 30% 15%; /* 深色背景 */
+    --card-primary-3-foreground: 35 80% 85%; /* 更亮的黄色文字 */
+
+    /* 深色模式边框和输入框 */
+    --border: 200 13% 25%; /* 深色边框 */
+    --input: 200 13% 25%; /* 深色输入框 */
+
+    /* 深色模式主要强调色 */
+    --primary: 200 57% 45%; /* 略亮的主蓝色 */
+    --primary-2: 160 40% 45%; /* 略亮的绿色 */
+    --primary-3: 280 29% 50%; /* 略亮的紫色 */
+    --primary-4: 35 80% 69%; /* 略亮的黄色 */
+
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* 深色模式装饰色 */
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+
+    --warning: 35 80% 69%;
+    --warning-foreground: 0 0% 100%;
+
+    /* 深色模式警告色 */
+    --destructive: 0 84% 65%; /* 略亮的红色警告色 */
+    --destructive-foreground: 0 0% 100%;
+
+    /* 深色模式交互元素 */
+    --ring: 200 57% 45%; /* 略亮的主蓝色 */
+
+    /* 深色模式图表配色 */
+    --chart-1: 200 57% 45%; /* 主蓝变体 */
+    --chart-2: 160 40% 45%; /* 绿色变体 */
+    --chart-3: 280 29% 50%; /* 紫色变体 */
+    --chart-4: 35 80% 75%; /* 黄色变体 */
+    --chart-5: 200 57% 55%; /* 更亮的蓝色变体 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
