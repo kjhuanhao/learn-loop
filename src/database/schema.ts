@@ -261,3 +261,38 @@ export const userSetting = pgTable("user_setting", {
     .references(() => user.id), // 关联用户ID
   setting: json("setting").$type<UserSetting>(), // 设置
 })
+
+/**
+ * 用户学习记录表
+ */
+export const userLearningRecord = pgTable("user_learning_record", {
+  id: text("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id), // 关联用户ID
+  date: timestamp("date").notNull(), // 学习日期
+  questionCount: integer("question_count").notNull().default(0), // 学习题目总数
+  correctCount: integer("correct_count").notNull().default(0), // 正确题目数
+  reviewCount: integer("review_count").notNull().default(0), // 复习题目数
+  learningTime: integer("learning_time").notNull().default(0), // 学习时长（分钟）
+  continuousDay: integer("continuous_day").notNull().default(0), // 连续学习天数
+  dailyProgress: integer("daily_progress").notNull().default(0), // 当日学习进度（百分比）
+  masteryDistribution: json("mastery_distribution").$type<
+    Record<QuestionMasteryLevel, number>
+  >(), // 熟练度分布
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+
+// 用户学习记录关联关系
+export const userLearningRecordRelations = relations(
+  userLearningRecord,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [userLearningRecord.userId],
+      references: [user.id],
+    }),
+  })
+)

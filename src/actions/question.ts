@@ -35,6 +35,12 @@ export interface GetQuestionListResponse {
   total: number
 }
 
+export interface QuestionWithQuestionToGroup extends Question {
+  questionToGroup: typeof questionToGroup.$inferSelect
+}
+
+export type GetAllQuestionListResponse = QuestionWithQuestionToGroup[]
+
 interface CreateNewQuestionActionProps {
   title: string
   content: QuestionContent
@@ -199,6 +205,46 @@ export const getQuestionListActionByFolderId = async (
       }
 
       return response
+    },
+  })
+}
+
+/**
+ * 获取所有题目
+ * @param groupId 题组id
+ * @returns { data: GetAllQuestionListResponse[]}
+ */
+export const getAllQuestionListByGroupIdAction = async (groupId: string) => {
+  return createAction({
+    actionFunc: async (user: User) => {
+      const questions = await db
+        .select({
+          id: question.id,
+          title: question.title,
+          content: question.content,
+          description: question.description,
+          type: question.type,
+          masteryLevel: question.masteryLevel,
+          reviewCount: question.reviewCount,
+          nextReviewAt: question.nextReviewAt,
+          createdAt: question.createdAt,
+          updatedAt: question.updatedAt,
+          questionToGroup: {
+            isCompleted: questionToGroup.isCompleted,
+            createdAt: questionToGroup.createdAt,
+          },
+        })
+        .from(questionToGroup)
+        .innerJoin(
+          question,
+          and(
+            eq(questionToGroup.questionId, question.id),
+            eq(question.userId, user.id)
+          )
+        )
+        .where(eq(questionToGroup.groupId, groupId))
+
+      return questions
     },
   })
 }

@@ -6,7 +6,7 @@ import { useRef, useState } from "react"
 
 type QuestionType = keyof typeof QuestionTypeEnum
 
-export const useQuestion = () => {
+export const useQuestionUpdate = () => {
   const [selectedType, setSelectedType] = useState<QuestionType>("SINGLE")
   const [title, setTitle] = useState("")
   const [open, setOpen] = useState(false)

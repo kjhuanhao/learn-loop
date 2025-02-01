@@ -13,8 +13,8 @@ import {
 import { Switch } from "@/components/ui/switch"
 import type { Folder } from "@/types/folder"
 import type { EditRef } from "@/types/question"
-import { MultipleEdit } from "./multipleEdit"
-import { SingleEdit } from "./singleEdit"
+import { MultipleEdit } from "./multiple-edit"
+import { SingleEdit } from "./single-edit"
 import { useEffect, useState } from "react"
 
 interface QuestionFormProps {

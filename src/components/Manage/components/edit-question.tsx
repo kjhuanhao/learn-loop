@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useRef, useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { useQuestion } from "@/hooks/use-question"
+import { useQuestionUpdate } from "@/hooks/use-question-update"
 import { useMutation } from "@tanstack/react-query"
 import type { QuestionContent } from "@/types/question"
 import { QuestionTypeEnum } from "@/enum/question.enum"
@@ -19,7 +19,7 @@ import {
   updateQuestionAction,
   type QuestionWithGroups,
 } from "@/actions/question"
-import { QuestionForm } from "./questionForm"
+import { QuestionForm } from "./question-form"
 import type { Folder } from "@/types/folder"
 
 interface EditQuestionProps {
@@ -51,7 +51,7 @@ export const EditQuestion = ({
     setTextAnswer,
     resetForm,
     handleEditorSwitch,
-  } = useQuestion()
+  } = useQuestionUpdate()
 
   const { toast } = useToast()
   const singleEditRef = useRef<{

@@ -11,7 +11,6 @@ export const QuestionGroup = () => {
     queryKey: ["group"],
     queryFn: getQuestionGroupListAction,
   })
-  console.log(data, "data")
 
   return (
     <Card className="w-full rounded-2xl">

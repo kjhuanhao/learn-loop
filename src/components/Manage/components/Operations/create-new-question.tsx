@@ -22,7 +22,7 @@ import {
   QuestionMasteryLevelEnum,
   QuestionTypeEnum,
 } from "@/enum/question.enum"
-import { useQuestion } from "@/hooks/use-question"
+import { useQuestionUpdate } from "@/hooks/use-question-update"
 import { useToast } from "@/hooks/use-toast"
 import { useSettingsStore } from "@/stores/settingsSlice"
 import type { Folder } from "@/types/folder"
@@ -31,7 +31,7 @@ import { useMutation } from "@tanstack/react-query"
 import { AlignLeft, CheckSquare, CircleDot, PlusIcon } from "lucide-react"
 import { useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { QuestionForm } from "../questionForm"
+import { QuestionForm } from "../question-form"
 import { useQueryClient } from "@tanstack/react-query"
 
 interface CreateNewQuestionProps {
@@ -59,7 +59,7 @@ export const CreateNewQuestion = ({
     setOpen,
     resetForm,
     handleEditorSwitch,
-  } = useQuestion()
+  } = useQuestionUpdate()
   const { toast } = useToast()
   const singleEditRef = useRef<EditRef>(null)
   const multipleEditRef = useRef<EditRef>(null)

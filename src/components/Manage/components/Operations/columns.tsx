@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/badge"
 
 import { updateQuestionAction } from "@/actions/question"
 import { useToast } from "@/hooks/use-toast"
+import { MasteryLevelStatus, QuestionTypeStatus } from "@/components/Status"
 
 interface CreateColumnsProps {
   onEditQuestion: (question: QuestionWithGroups) => void
@@ -103,22 +104,7 @@ export const createColumns = ({
       header: "类型",
       cell: ({ row }) => {
         const type = row.getValue("type") as QuestionType
-        const typeConfig = {
-          [QuestionTypeEnum.SINGLE]: { label: "单选题", variant: "default" },
-          [QuestionTypeEnum.MULTIPLE]: {
-            label: "多选题",
-            variant: "secondary",
-          },
-          [QuestionTypeEnum.TEXT]: { label: "简答题", variant: "outline" },
-        }
-        const config = typeConfig[type]
-        return (
-          <Badge
-            variant={config.variant as "default" | "secondary" | "outline"}
-          >
-            {config.label}
-          </Badge>
-        )
+        return <QuestionTypeStatus type={type} />
       },
     },
     {
@@ -126,38 +112,7 @@ export const createColumns = ({
       header: "掌握程度",
       cell: ({ row }) => {
         const level = row.getValue("masteryLevel") as QuestionMasteryLevel
-        const levelConfig = {
-          [QuestionMasteryLevelEnum.BEGINNER]: {
-            label: "初学",
-            variant: "secondary",
-          },
-          [QuestionMasteryLevelEnum.INTERMEDIATE]: {
-            label: "进阶",
-            variant: "default",
-          },
-          [QuestionMasteryLevelEnum.PROFICIENCY]: {
-            label: "熟练",
-            variant: "outline",
-          },
-          [QuestionMasteryLevelEnum.EXPERTISE]: {
-            label: "精通",
-            variant: "destructive",
-          },
-        }
-        const config = levelConfig[level]
-        return (
-          <Badge
-            variant={
-              config.variant as
-                | "default"
-                | "secondary"
-                | "outline"
-                | "destructive"
-            }
-          >
-            {config.label}
-          </Badge>
-        )
+        return <MasteryLevelStatus level={level} />
       },
     },
     {
