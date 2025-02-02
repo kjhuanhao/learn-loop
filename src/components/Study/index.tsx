@@ -17,6 +17,7 @@ import {
 import { ChatComponent } from "../Chat"
 import { QuestionTypeEnum } from "@/enum/question.enum"
 
+// TODO: 需要处理 Question 获取异常的情况
 export const Study = () => {
   const { slug } = useParams()
   const { setQuestions } = useQuestionStore()
@@ -55,6 +56,7 @@ export const Study = () => {
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={60} className="h-full">
           <Details
+            question={questions[activeQuestionIndex]}
             activeQuestionIndex={activeQuestionIndex}
             setActiveQuestionIndex={setActiveQuestionIndex}
             isLoading={isPending}
@@ -62,7 +64,7 @@ export const Study = () => {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={40}>
-          <ChatComponent getContext={getContext} />
+          <ChatComponent getContext={getContext} isCanChat={!isPending} />
         </ResizablePanel>
       </ResizablePanelGroup>
 

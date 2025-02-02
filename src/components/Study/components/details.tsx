@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
 
 type DetailsProps = {
+  question: QuestionWithQuestionToGroup
   activeQuestionIndex: number
   setActiveQuestionIndex: React.Dispatch<React.SetStateAction<number>>
   isLoading: boolean
@@ -37,7 +38,6 @@ export const SingleQuestion = ({ question }: QuestionProps) => {
   const { setUserAnswer, getUserAnswer } = useQuestionStore()
   useEffect(() => {
     const answer = getUserAnswer(question.id)
-    console.log(answer, "answer")
 
     if (answer) {
       setSelectedAnswer(answer[0] as string)
@@ -88,20 +88,28 @@ const MultipleQuestion = ({ question }: QuestionProps) => {
     }
   }, [question.id])
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       {question.content?.options.map((option, index) => (
-        <div className="flex items-center space-x-3 rounded-lg p-4 border hover:bg-muted/50 transition-colors cursor-pointer">
+        <div
+          key={index}
+          className="flex items-center space-x-3 rounded-lg p-4 border hover:bg-muted/50 transition-colors cursor-pointer"
+          onClick={() => {
+            setSelectedAnswers((prev) => {
+              if (prev.includes(option.value)) {
+                return prev.filter((item) => item !== option.value)
+              }
+              return [...prev, option.value]
+            })
+            setUserAnswer({
+              id: question.id,
+              answer: [...selectedAnswers, option.value],
+            })
+          }}
+        >
           <Checkbox
             key={index}
             checked={selectedAnswers.includes(option.value)}
             value={option.value}
-            onCheckedChange={(checked) => {
-              setSelectedAnswers(checked ? [option.value] : [])
-              setUserAnswer({
-                id: question.id,
-                answer: checked ? [option.value] : [],
-              })
-            }}
           />
           <Label>{`${option.value}. ${option.label}`}</Label>
         </div>
@@ -134,24 +142,19 @@ const TextQuestion = ({ question }: QuestionProps) => {
 }
 
 export const Details = ({
+  question,
   activeQuestionIndex,
   setActiveQuestionIndex,
   isLoading,
 }: DetailsProps) => {
   const [activeTab, setActiveTab] = useState("content")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const { questions } = useQuestionStore()
   const { toast } = useToast()
-  const [question, setQuestion] = useState<QuestionWithQuestionToGroup>()
+  const { questions } = useQuestionStore()
   const handleShowAnswer = () => {
     setActiveTab("correct")
     setIsDialogOpen(false)
   }
-
-  useEffect(() => {
-    const question = questions[activeQuestionIndex]
-    setQuestion(question)
-  }, [activeQuestionIndex, questions])
 
   return (
     <div className="border h-[calc(100vh-5rem)] rounded-lg bg-white">
