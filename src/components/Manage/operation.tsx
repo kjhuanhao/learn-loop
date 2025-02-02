@@ -40,6 +40,7 @@ export const OperationPanel = ({
   selectedGroupId,
   folders,
   groups,
+  setSelectedFolderId,
   onQuestionsDeleted,
 }: {
   active: "folder" | "group"
@@ -48,6 +49,7 @@ export const OperationPanel = ({
   folders: Folder[]
   groups: Group[]
   onQuestionsDeleted: () => void
+  setSelectedFolderId: (id: string) => void
 }) => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
@@ -57,8 +59,13 @@ export const OperationPanel = ({
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { unClassifiedFolderId } = useSettingsStore()
+
   const targetFolderId =
-    active === "folder" ? selectedFolderId : unClassifiedFolderId
+    active === "folder"
+      ? selectedFolderId === ""
+        ? unClassifiedFolderId
+        : selectedFolderId
+      : selectedGroupId
 
   // 查找当前选中的文件夹和题组
   const selectedFolder = folders.find((f) => f.id === selectedFolderId)
@@ -354,6 +361,7 @@ export const OperationPanel = ({
           </Button>
           <CreateNewQuestion
             folders={folders}
+            setSelectedFolderId={setSelectedFolderId}
             targetFolderId={targetFolderId}
             onSuccess={() => refetchFolder()}
           />

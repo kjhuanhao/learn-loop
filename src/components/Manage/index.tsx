@@ -63,6 +63,7 @@ export const Manage = () => {
       <OperationPanel
         active={active}
         selectedFolderId={selectedFolderId}
+        setSelectedFolderId={setSelectedFolderId}
         selectedGroupId={selectedGroupId}
         folders={folders}
         groups={groups}

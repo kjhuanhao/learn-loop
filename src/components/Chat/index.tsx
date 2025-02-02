@@ -6,10 +6,10 @@ import { useRef } from "react"
 import { BotIcon } from "lucide-react"
 
 interface ChatComponentProps {
-  question?: string
-  prompt?: string
+  getContext?: () => string
 }
-export const ChatComponent = () => {
+
+export const ChatComponent = ({ getContext }: ChatComponentProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const size = useSize(ref)
   const isShowIndicator = size?.width && size.width < 100
@@ -22,7 +22,11 @@ export const ChatComponent = () => {
     isLoading,
     stop,
     append,
-  } = useChat()
+  } = useChat({
+    body: {
+      context: getContext ? getContext() : "",
+    },
+  })
 
   return (
     <>

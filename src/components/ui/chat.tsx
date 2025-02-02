@@ -28,6 +28,7 @@ interface ChatPropsBase {
     messageId: string,
     rating: "thumbs-up" | "thumbs-down"
   ) => void
+  isAllowFile?: boolean
 }
 
 interface ChatPropsWithoutSuggestions extends ChatPropsBase {
@@ -54,6 +55,7 @@ export function Chat({
   suggestions,
   className,
   onRateResponse,
+  isAllowFile = false,
 }: ChatProps) {
   const lastMessage = messages.at(-1)
   const isEmpty = messages.length === 0
@@ -121,17 +123,26 @@ export function Chat({
         isPending={isGenerating || isTyping}
         handleSubmit={handleSubmit}
       >
-        {({ files, setFiles }) => (
-          <MessageInput
-            value={input}
-            onChange={handleInputChange}
-            allowAttachments
-            files={files}
-            setFiles={setFiles}
-            stop={stop}
-            isGenerating={isGenerating}
-          />
-        )}
+        {({ files, setFiles }) =>
+          isAllowFile ? (
+            <MessageInput
+              value={input}
+              onChange={handleInputChange}
+              allowAttachments={isAllowFile}
+              files={files}
+              setFiles={setFiles}
+              stop={stop}
+              isGenerating={isGenerating}
+            />
+          ) : (
+            <MessageInput
+              value={input}
+              onChange={handleInputChange}
+              stop={stop}
+              isGenerating={isGenerating}
+            />
+          )
+        }
       </ChatForm>
     </ChatContainer>
   )

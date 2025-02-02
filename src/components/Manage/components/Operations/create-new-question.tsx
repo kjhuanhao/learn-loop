@@ -38,12 +38,14 @@ interface CreateNewQuestionProps {
   targetFolderId: string | undefined
   folders: Folder[]
   onSuccess?: () => void
+  setSelectedFolderId: (id: string) => void
 }
 
 export const CreateNewQuestion = ({
   targetFolderId,
   folders,
   onSuccess,
+  setSelectedFolderId,
 }: CreateNewQuestionProps) => {
   const {
     selectedType,
@@ -64,6 +66,7 @@ export const CreateNewQuestion = ({
   const singleEditRef = useRef<EditRef>(null)
   const multipleEditRef = useRef<EditRef>(null)
   const queryClient = useQueryClient()
+  console.log(targetFolderId, "targetFolderId")
 
   const { mutate: createNewQuestion, isPending: isCreating } = useMutation({
     mutationFn: createNewQuestionAction,
@@ -143,6 +146,7 @@ export const CreateNewQuestion = ({
         folderId: targetFolderId,
         type: QuestionTypeEnum.MULTIPLE,
       })
+      console.log(targetFolderId, "target")
     }
     if (selectedType === "TEXT") {
       const answer = editorAnswerRef?.current?.getMarkdown()
@@ -232,6 +236,7 @@ export const CreateNewQuestion = ({
           title={title}
           folders={folders}
           selectedFolderId={targetFolderId || ""}
+          setSelectedFolderId={setSelectedFolderId}
           selectedType={selectedType}
           isAnswer={isAnswer}
           textContent={textContent}
