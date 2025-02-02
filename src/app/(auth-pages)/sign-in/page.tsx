@@ -10,6 +10,8 @@ import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { CreateUnClassifiedFolderAction } from "@/actions/folder"
+import { useMutation } from "@tanstack/react-query"
 
 const signInSchema = z.object({
   email: z.string().email("请输入有效的邮箱地址"),
@@ -28,6 +30,10 @@ export default function Login() {
   })
   const [errors, setErrors] = useState<SignInErrors>({})
   const [isLoading, setIsLoading] = useState(false)
+
+  const { mutate: createUnClassifiedFolder } = useMutation({
+    mutationFn: CreateUnClassifiedFolderAction,
+  })
 
   const validateField = (field: keyof SignInForm, value: string) => {
     if (!value) {
@@ -76,7 +82,8 @@ export default function Login() {
         },
         {
           onRequest: () => setIsLoading(true),
-          onSuccess: () => {
+          onSuccess: async () => {
+            createUnClassifiedFolder()
             setIsLoading(false)
             router.push("/") // 登录成功后跳转到首页
           },

@@ -40,6 +40,27 @@ export const createNewFolderAction = async (
 }
 
 /**
+ * 创建未分类问题分类
+ * @returns
+ */
+export const CreateUnClassifiedFolderAction = async () => {
+  return createAction({
+    actionFunc: async (user: User) => {
+      const [insertedFolder] = await db
+        .insert(questionFolder)
+        .values({
+          userId: user.id,
+          name: "未分类",
+          isCanDelete: false,
+        })
+        .returning()
+
+      return insertedFolder
+    },
+  })
+}
+
+/**
  * 获取问题分类列表
  * @returns
  */
