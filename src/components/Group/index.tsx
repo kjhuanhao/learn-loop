@@ -1,10 +1,10 @@
 import { getQuestionGroupListAction } from "@/actions/group"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
-import { CreateNewGroup } from "./components/CreateNewGroup"
-import { GroupList } from "./components/GroupList"
-import { GroupSkeleton } from "./components/GroupSkeleton"
-import { Manage } from "./components/Manage"
+import { CreateNewGroup } from "./components/create-new-group"
+import { GroupList } from "./components/group-list"
+import { GroupSkeleton } from "./components/group-skeleton"
+import { Manage } from "./components/manage"
 
 export const QuestionGroup = () => {
   const { data, isPending } = useQuery({

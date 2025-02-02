@@ -68,12 +68,12 @@ export const QuestionList = ({
   const { questions } = useQuestionStore()
   const [isOpen, setIsOpen] = useState(false)
   const totalQuestions = questions.length
-  const completedQuestions = questions.filter(
+  const reviewedQuestions = questions.filter(
     (item) => item.questionToGroup.isCompleted
   ).length
 
   const progress =
-    totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0
+    totalQuestions > 0 ? (reviewedQuestions / totalQuestions) * 100 : 0
 
   const shouldShowScroll = isLoading || questions.length > 0
   return (
@@ -99,7 +99,7 @@ export const QuestionList = ({
                 {isLoading ? (
                   <Skeleton className="h-4 w-[50px]" />
                 ) : (
-                  `${completedQuestions} / ${totalQuestions}`
+                  `${reviewedQuestions} / ${totalQuestions}`
                 )}
               </span>
             </div>

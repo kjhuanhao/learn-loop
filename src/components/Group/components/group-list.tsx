@@ -1,7 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { GroupItem } from "./GroupItem"
-import { EmptyGroup } from "./EmptyGroup"
+import { GroupItem } from "./group-item"
+import { EmptyGroup } from "./empty-group"
 import type { Group } from "@/types/group"
 
 export const GroupList = ({ groups }: { groups: Group[] }) => {

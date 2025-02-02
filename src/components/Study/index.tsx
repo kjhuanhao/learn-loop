@@ -24,17 +24,15 @@ export const Study = () => {
   const { questions } = useQuestionStore()
   const { data, isPending } = useQuery({
     queryKey: ["questionList", slug],
-    queryFn: () => getAllQuestionListByGroupIdAction(slug as string),
+    queryFn: async () => {
+      const data = await getAllQuestionListByGroupIdAction(slug as string)
+      setQuestions(data.data as QuestionWithQuestionToGroup[])
+      return data
+    },
     enabled: !!slug,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   })
-
-  useEffect(() => {
-    if (data?.data) {
-      setQuestions(data.data as QuestionWithQuestionToGroup[])
-    }
-  }, [data])
 
   const getContext = () => {
     const question = questions[activeQuestionIndex]

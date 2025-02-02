@@ -28,12 +28,12 @@ export const GroupItem = ({ group, onClick }: GroupItemProps) => {
   const { name, description, status, tag, questionCount, questionToGroup } =
     group
   const totalQuestions = questionCount
-  const completedQuestions = Array.isArray(questionToGroup)
+  const reviewedQuestions = Array.isArray(questionToGroup)
     ? questionToGroup.filter((item: QuestionToGroup) => item.isCompleted).length
     : 0
 
   const progress =
-    totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0
+    totalQuestions > 0 ? (reviewedQuestions / totalQuestions) * 100 : 0
 
   return (
     <div
@@ -72,7 +72,7 @@ export const GroupItem = ({ group, onClick }: GroupItemProps) => {
             </div>
           </div>
           <span className="text-xs text-muted-foreground">
-            {completedQuestions}/{totalQuestions}
+            {reviewedQuestions}/{totalQuestions}
           </span>
         </div>
       </div>

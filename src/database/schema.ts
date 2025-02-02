@@ -263,7 +263,7 @@ export const userSetting = pgTable("user_setting", {
 })
 
 /**
- * 用户学习记录表
+ * 用户学习记录表，一天存一次
  */
 export const userLearningRecord = pgTable("user_learning_record", {
   id: text("id")
@@ -272,7 +272,6 @@ export const userLearningRecord = pgTable("user_learning_record", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id), // 关联用户ID
-  date: timestamp("date").notNull(), // 学习日期
   questionCount: integer("question_count").notNull().default(0), // 学习题目总数
   correctCount: integer("correct_count").notNull().default(0), // 正确题目数
   reviewCount: integer("review_count").notNull().default(0), // 复习题目数

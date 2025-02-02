@@ -142,14 +142,16 @@ export const Details = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { questions } = useQuestionStore()
   const { toast } = useToast()
-
+  const [question, setQuestion] = useState<QuestionWithQuestionToGroup>()
   const handleShowAnswer = () => {
     setActiveTab("correct")
     setIsDialogOpen(false)
   }
 
-  const question = questions[activeQuestionIndex]
-  if (!question && !isLoading) return null
+  useEffect(() => {
+    const question = questions[activeQuestionIndex]
+    setQuestion(question)
+  }, [activeQuestionIndex, questions])
 
   return (
     <div className="border h-[calc(100vh-5rem)] rounded-lg bg-white">
@@ -216,19 +218,23 @@ export const Details = ({
                 </div>
               ) : (
                 <>
-                  <h2 className="text-2xl font-bold">{question.title}</h2>
-                  <div>{question.description}</div>
-                  <div className="py-5 gap-2 justify-between">
-                    {question.type === "single" && (
-                      <SingleQuestion question={question} />
-                    )}
-                    {question.type === "multiple" && (
-                      <MultipleQuestion question={question} />
-                    )}
-                    {question.type === "text" && (
-                      <TextQuestion question={question} />
-                    )}
-                  </div>
+                  {question && (
+                    <>
+                      <h2 className="text-2xl font-bold">{question.title}</h2>
+                      <div>{question.description}</div>
+                      <div className="py-5 gap-2 justify-between">
+                        {question.type === "single" && (
+                          <SingleQuestion question={question} />
+                        )}
+                        {question.type === "multiple" && (
+                          <MultipleQuestion question={question} />
+                        )}
+                        {question.type === "text" && (
+                          <TextQuestion question={question} />
+                        )}
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
