@@ -105,7 +105,7 @@ export const Details = ({
   const question = questions[activeQuestionIndex]
   if (!question) return null
   return (
-    <div className="w-2/3 border h-[calc(100vh-5rem)] rounded-lg bg-white">
+    <div className="border h-[calc(100vh-5rem)] rounded-lg bg-white">
       <Tabs
         className="p-2"
         value={activeTab}

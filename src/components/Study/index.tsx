@@ -9,6 +9,12 @@ import { Details } from "./components/details"
 import { QuestionList } from "./components/question-list"
 import { useEffect, useState } from "react"
 import { useQuestionStore } from "@/stores/questionSlice"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import { ChatComponent } from "../Chat"
 
 export const Study = () => {
   const { slug } = useParams()
@@ -30,12 +36,21 @@ export const Study = () => {
   }, [data])
 
   return (
-    <div className="flex p-2 items-center gap-5  bg-gray-100 dark:bg-gray-800">
-      <Details
-        activeQuestionIndex={activeQuestionIndex}
-        setActiveQuestionIndex={setActiveQuestionIndex}
-        isLoading={isPending}
-      />
+    <div className="flex p-2 items-center gap-3  bg-gray-100 dark:bg-gray-800">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={60}>
+          <Details
+            activeQuestionIndex={activeQuestionIndex}
+            setActiveQuestionIndex={setActiveQuestionIndex}
+            isLoading={isPending}
+          />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={40}>
+          <ChatComponent />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+
       <QuestionList
         activeQuestionIndex={activeQuestionIndex}
         setActiveQuestionIndex={setActiveQuestionIndex}
