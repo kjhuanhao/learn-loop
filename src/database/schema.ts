@@ -1,9 +1,5 @@
 import { QuestionMasteryLevelEnum } from "@/enum/question.enum"
-import type {
-  LimitedOption,
-  QuestionContent,
-  QuestionMasteryLevel,
-} from "@/types/question"
+import type { QuestionContent, QuestionMasteryLevel } from "@/types/question"
 import { sql } from "drizzle-orm"
 import {
   pgTable,
@@ -13,6 +9,7 @@ import {
   pgEnum,
   json,
   integer,
+  decimal,
   primaryKey,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm/relations"
@@ -275,12 +272,10 @@ export const userLearningRecord = pgTable("user_learning_record", {
   questionCount: integer("question_count").notNull().default(0), // 学习题目总数
   correctCount: integer("correct_count").notNull().default(0), // 正确题目数
   reviewCount: integer("review_count").notNull().default(0), // 复习题目数
-  learningTime: integer("learning_time").notNull().default(0), // 学习时长（分钟）
+  learningTime: decimal("learning_time", { precision: 9, scale: 1 })
+    .notNull()
+    .default("0.0"), // 学习时长（分钟）
   continuousDay: integer("continuous_day").notNull().default(0), // 连续学习天数
-  dailyProgress: integer("daily_progress").notNull().default(0), // 当日学习进度（百分比）
-  masteryDistribution: json("mastery_distribution").$type<
-    Record<QuestionMasteryLevel, number>
-  >(), // 熟练度分布
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 })

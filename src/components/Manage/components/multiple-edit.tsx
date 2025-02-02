@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { LimitedOption, type QuestionContent } from "@/types/question"
+import { Option, type QuestionContent } from "@/types/question"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -14,14 +14,12 @@ export const MultipleEdit = forwardRef<{
   getContent: () => QuestionContent
   setContent: (content: QuestionContent) => void
 }>((props, ref) => {
-  const [options, setOptions] = useState<LimitedOption[]>([
+  const [options, setOptions] = useState<Option[]>([
     { value: "A", label: "" },
     { value: "B", label: "" },
     { value: "C", label: "" },
   ])
-  const [correctAnswers, setCorrectAnswers] = useState<
-    LimitedOption["value"][]
-  >([])
+  const [correctAnswers, setCorrectAnswers] = useState<string[]>([])
   const { toast } = useToast()
 
   useImperativeHandle(ref, () => {
@@ -41,7 +39,7 @@ export const MultipleEdit = forwardRef<{
           setOptions(content.options)
         }
         if (content.correct && Array.isArray(content.correct)) {
-          setCorrectAnswers(content.correct as LimitedOption["value"][])
+          setCorrectAnswers(content.correct)
         }
       },
     }
@@ -55,9 +53,7 @@ export const MultipleEdit = forwardRef<{
       })
       return
     }
-    const newValue = String.fromCharCode(
-      65 + options.length
-    ) as LimitedOption["value"]
+    const newValue = String.fromCharCode(65 + options.length)
     setOptions([...options, { value: newValue, label: "" }])
   }
 
@@ -76,10 +72,7 @@ export const MultipleEdit = forwardRef<{
     setOptions(newOptions)
   }
 
-  const handleCorrectAnswerChange = (
-    value: LimitedOption["value"],
-    checked: boolean
-  ) => {
+  const handleCorrectAnswerChange = (value: string, checked: boolean) => {
     if (checked) {
       setCorrectAnswers([...correctAnswers, value])
     } else {

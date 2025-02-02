@@ -27,8 +27,8 @@ const Header = async () => {
           </div>
           <nav className="flex items-center space-x-2">
             {/* <ThemeSwitcher /> */}
-            <HeaderAuth user={user} />
             <LearnButton />
+            <HeaderAuth user={user} />
           </nav>
         </div>
       </div>

@@ -38,7 +38,7 @@ export const GroupItem = ({ group, onClick }: GroupItemProps) => {
   return (
     <div
       onClick={onClick}
-      className="group flex flex-col gap-2 rounded-lg border p-4 hover:border-primary cursor-pointer transition-all"
+      className="group flex flex-col gap-2 justify-between rounded-lg border p-4 hover:border-primary cursor-pointer transition-all"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick?.()}

@@ -52,12 +52,12 @@ export const HeaderAuth = ({ user }: { user: Session["user"] | undefined }) => {
             )}
           </div>
         </div>
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link href="/profile">个人资料</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        </DropdownMenuItem> */}
+        {/* <DropdownMenuItem asChild>
           <Link href="/settings">设置</Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={async () => {

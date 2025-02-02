@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { LimitedOption, type QuestionContent } from "@/types/question"
+import { Option, type QuestionContent } from "@/types/question"
 import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -15,13 +15,12 @@ export const SingleEdit = forwardRef<{
   setContent: (content: QuestionContent) => void
 }>((props, ref) => {
   console.log("SingleEdit rendered, ref:", ref)
-  const [options, setOptions] = useState<LimitedOption[]>([
+  const [options, setOptions] = useState<Option[]>([
     { value: "A", label: "" },
     { value: "B", label: "" },
     { value: "C", label: "" },
   ])
-  const [correctAnswer, setCorrectAnswer] =
-    useState<LimitedOption["value"]>("A")
+  const [correctAnswer, setCorrectAnswer] = useState<string>("A")
   const { toast } = useToast()
 
   useImperativeHandle(ref, () => {
@@ -43,7 +42,7 @@ export const SingleEdit = forwardRef<{
           Array.isArray(content.correct) &&
           content.correct.length > 0
         ) {
-          const answer = content.correct[0] as LimitedOption["value"]
+          const answer = content.correct[0]
           setCorrectAnswer(answer)
         }
       },
@@ -58,9 +57,7 @@ export const SingleEdit = forwardRef<{
       })
       return
     }
-    const newValue = String.fromCharCode(
-      65 + options.length
-    ) as LimitedOption["value"]
+    const newValue = String.fromCharCode(65 + options.length)
     setOptions([...options, { value: newValue, label: "" }])
   }
 
@@ -97,9 +94,7 @@ export const SingleEdit = forwardRef<{
                 </div>
                 <RadioGroup
                   value={correctAnswer}
-                  onValueChange={(value: LimitedOption["value"]) =>
-                    setCorrectAnswer(value)
-                  }
+                  onValueChange={(value: string) => setCorrectAnswer(value)}
                   className="flex items-center space-x-2"
                 >
                   <RadioGroupItem

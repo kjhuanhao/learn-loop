@@ -6,8 +6,8 @@ import {
 
 import { question } from "@/database/schema"
 
-export type LimitedOption = {
-  value: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H"
+export type Option = {
+  value: string
   label: string
 }
 
@@ -23,8 +23,8 @@ export type QuestionGroupStatus =
 export type Question = typeof question.$inferSelect & {}
 
 export type QuestionContent = {
-  options: LimitedOption[] // 选项
-  correct: LimitedOption["value"][] | string // 正确答案
+  options: Option[] // 选项
+  correct: string[] | string // 正确答案
 }
 
 export interface EditRef {
