@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuestionStore } from "@/stores/questionSlice"
 import { List, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   QuestionCompletedStatus,
@@ -37,6 +37,12 @@ const QuestionItem = ({
   onClick: () => void
   active: boolean
 }) => {
+  const isCompleted = useMemo(() => {
+    const now = new Date()
+    const nextReviewAt = new Date(item.nextReviewAt)
+    return nextReviewAt > now
+  }, [item.nextReviewAt])
+
   return (
     <Card
       onClick={onClick}
@@ -50,7 +56,7 @@ const QuestionItem = ({
       </CardHeader>
       <CardContent className="px-3 py-2 flex items-center gap-2 justify-between">
         <QuestionTypeStatus type={item.type} />
-        <QuestionCompletedStatus completed={item.questionToGroup.isCompleted} />
+        <QuestionCompletedStatus completed={isCompleted} />
       </CardContent>
     </Card>
   )

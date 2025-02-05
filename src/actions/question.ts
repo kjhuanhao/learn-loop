@@ -64,6 +64,7 @@ interface UpdateQuestionActionProps {
   masteryLevel?: QuestionMasteryLevel
   reviewCount?: number
   nextReviewAt?: Date
+  lastAnswer?: string
 }
 
 /**
@@ -350,6 +351,7 @@ export const updateQuestionAction = async (body: UpdateQuestionActionProps) => {
               masteryLevel: body.masteryLevel,
               reviewCount: body.reviewCount,
               nextReviewAt: body.nextReviewAt,
+              lastAnswer: body.lastAnswer,
             }).reduce(
               (acc, [key, value]) => {
                 if (value !== undefined) {

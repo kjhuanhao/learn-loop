@@ -15,6 +15,7 @@ interface AnswerFeedbackProps {
   userAnswer: string[] | string | null
   isCorrect: boolean
   onNext: () => void
+  isCompleted: boolean
   onMasteryChange: (
     mastery: (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
   ) => Promise<boolean>
@@ -27,14 +28,15 @@ export const AnswerFeedback = ({
   isCorrect,
   onNext,
   onMasteryChange,
+  isCompleted,
 }: AnswerFeedbackProps) => {
   if (!question) return null
 
   const [mastery, setMastery] = useState<
     | (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
     | null
-  >(null)
-  const [isShowMasterySubmit, setIsShowMasterySubmit] = useState(true)
+  >(question.masteryLevel ?? null)
+  const [isShowMasterySubmit, setIsShowMasterySubmit] = useState(!isCompleted)
 
   const handleMasteryChange = async (
     value: (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
@@ -91,7 +93,7 @@ export const AnswerFeedback = ({
         <h3 className="font-medium">答题反馈</h3>
         {isOpen && (
           <div className="flex gap-2">
-            <Button onClick={onNext} disabled={!mastery}>
+            <Button onClick={onNext} disabled={!isCompleted && !mastery}>
               下一题
             </Button>
           </div>
@@ -101,7 +103,7 @@ export const AnswerFeedback = ({
       <ScrollArea className="flex-1">
         {isOpen ? (
           <div className="p-4 space-y-6">
-            {isShowMasterySubmit && (
+            {!isCompleted && (
               <div>
                 <MasterySubmit value={mastery} onChange={handleMasteryChange} />
               </div>

@@ -7,12 +7,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { useQuestionStore } from "@/stores/questionSlice"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 export type DetailsProps = {
   question: QuestionWithQuestionToGroup | null
-  activeQuestionIndex: number
-  setActiveQuestionIndex: React.Dispatch<React.SetStateAction<number>>
   isLoading: boolean
   submitAnswer: () => void
   isSubmitting: boolean
@@ -156,14 +154,14 @@ const QuestionSkeleton = () => (
 
 export const Details = ({
   question,
-  activeQuestionIndex,
-  setActiveQuestionIndex,
+
   isLoading,
   submitAnswer,
   isSubmitting,
   isFeedbackOpen,
 }: DetailsProps) => {
-  const { questions } = useQuestionStore()
+  const { questions, activeQuestionIndex, setActiveQuestionIndex } =
+    useQuestionStore()
 
   const renderQuestionContent = () => {
     if (!question) return null
@@ -204,7 +202,7 @@ export const Details = ({
             <Button
               variant="outline"
               disabled={isLoading || activeQuestionIndex === 0}
-              onClick={() => setActiveQuestionIndex((prev) => prev - 1)}
+              onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
             >
               上一题
             </Button>
@@ -213,7 +211,7 @@ export const Details = ({
               disabled={
                 isLoading || activeQuestionIndex === questions.length - 1
               }
-              onClick={() => setActiveQuestionIndex((prev) => prev + 1)}
+              onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
             >
               下一题
             </Button>

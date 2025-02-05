@@ -111,6 +111,7 @@ export const question = pgTable("question", {
     .default(sql`gen_random_uuid()`),
   title: text("title").notNull(), // 问题标题
   content: json("content").$type<QuestionContent>(), // 问题内容
+  lastAnswer: text("last_answer"), // 最后一次回答
   description: text("description"), // 问题描述
   type: questionTypeEnum("type").notNull(), // 问题类型：多选、单选、文本
   masteryLevel: text("mastery_level") // 问题熟练度：初学者、中级、熟练、专家

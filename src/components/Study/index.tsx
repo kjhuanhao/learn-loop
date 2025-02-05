@@ -8,7 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { Details } from "./components/details"
 import { QuestionList } from "./components/question-list"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useQuestionStore } from "@/stores/questionSlice"
 import {
   ResizableHandle,
@@ -33,16 +33,25 @@ import { updateQuestionToGroupAction } from "@/actions/group"
 // TODO: 需要处理 Question 获取异常的情况
 export const Study = () => {
   const { slug } = useParams()
-  const { setQuestions, getUserAnswer, updateQuestion } = useQuestionStore()
-  const [activeQuestionIndex, setActiveQuestionIndex] = useState<number>(0)
-  const { questions } = useQuestionStore()
+  const { setQuestions, getUserAnswer, updateQuestion, getUserStringAnswer } =
+    useQuestionStore()
+  // const [activeQuestionIndex, setActiveQuestionIndex] = useState<number>(0)
+  const { questions, activeQuestionIndex, setActiveQuestionIndex } =
+    useQuestionStore()
   const [currentQuestion, setCurrentQuestion] =
     useState<QuestionWithQuestionToGroup | null>(null)
   const ref = useRef<{ handleSubmitChat: (prompt: string) => void }>(null)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-
   const { toast } = useToast()
+
+  const isCurrentQuestionCompleted = useMemo(() => {
+    if (!currentQuestion) return false
+    const now = new Date()
+    const nextReviewAt = new Date(currentQuestion.nextReviewAt)
+    setIsFeedbackOpen(nextReviewAt > now)
+    return nextReviewAt > now
+  }, [currentQuestion?.nextReviewAt])
 
   // 获取所有的题目
   const { isPending } = useQuery({
@@ -57,6 +66,7 @@ export const Study = () => {
     refetchOnWindowFocus: false,
   })
 
+  // 提交答案后进行检查
   const { mutate: submitAnswer, isPending: isUpdatingRecord } = useMutation({
     mutationFn: async () => {
       if (!currentQuestion) return
@@ -110,6 +120,7 @@ export const Study = () => {
     onSuccess: () => {},
   })
 
+  // 处理熟练度变化
   const { mutateAsync: handleMasteryChange } = useMutation({
     mutationFn: async (
       mastery: (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
@@ -126,6 +137,9 @@ export const Study = () => {
         currentQuestion,
         mastery
       )
+      const userAnswer = getUserStringAnswer(currentQuestion.id)
+      const answer = userAnswer || undefined
+      const storeAnswer = userAnswer ?? null
 
       try {
         // 对题目的状态进行更新
@@ -134,6 +148,7 @@ export const Study = () => {
           masteryLevel: mastery,
           reviewCount: currentQuestion.reviewCount + 1,
           nextReviewAt: nextReviewDate,
+          lastAnswer: answer,
         })
 
         // 对题组状态进行更新
@@ -149,6 +164,7 @@ export const Study = () => {
           masteryLevel: mastery,
           reviewCount: currentQuestion.reviewCount + 1,
           nextReviewAt: nextReviewDate,
+          lastAnswer: storeAnswer,
         })
 
         return true
@@ -168,7 +184,9 @@ export const Study = () => {
 
   const handleNextQuestion = () => {
     if (activeQuestionIndex < questions.length - 1) {
-      setActiveQuestionIndex((prev) => prev + 1)
+      setActiveQuestionIndex(activeQuestionIndex + 1)
+    } else {
+      setActiveQuestionIndex(activeQuestionIndex - 1)
     }
     setIsFeedbackOpen(false)
   }
@@ -179,8 +197,6 @@ export const Study = () => {
         <ResizablePanel defaultSize={40}>
           <Details
             question={currentQuestion}
-            activeQuestionIndex={activeQuestionIndex}
-            setActiveQuestionIndex={setActiveQuestionIndex}
             isLoading={isPending}
             submitAnswer={submitAnswer}
             isSubmitting={isUpdatingRecord}
@@ -210,6 +226,7 @@ export const Study = () => {
                     isCorrect={isCorrect}
                     onNext={handleNextQuestion}
                     onMasteryChange={handleMasteryChange}
+                    isCompleted={isCurrentQuestionCompleted}
                   />
                 </ResizablePanel>
               </motion.div>

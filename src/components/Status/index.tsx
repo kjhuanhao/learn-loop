@@ -67,7 +67,7 @@ export const QuestionCompletedStatus = ({
       variant={completed ? "default" : "outline"}
       className="text-xs font-medium"
     >
-      {completed ? "已完成" : "未完成"}
+      {completed ? "今日已完成" : "今日未完成"}
     </Badge>
   )
 }
