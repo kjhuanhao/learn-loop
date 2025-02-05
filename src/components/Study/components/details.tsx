@@ -36,15 +36,17 @@ const QuestionOption = ({
 }) => (
   <div
     onClick={disabled ? undefined : onClick}
-    className={`flex items-center space-x-3 rounded-lg p-4 border transition-colors ${
+    className={`flex items-center space-x-3 rounded-lg p-4 border transition-all duration-200 ${
       disabled
-        ? "cursor-not-allowed opacity-60"
-        : "hover:bg-muted/50 cursor-pointer"
+        ? "cursor-not-allowed opacity-60 bg-gray-50"
+        : "hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 active:bg-gray-100 cursor-pointer shadow-sm hover:shadow-md"
     }`}
   >
     {children}
     <Label
-      className={`flex-1 ${disabled ? "cursor-not-allowed" : "cursor-pointer"} leading-normal`}
+      className={`flex-1 ${
+        disabled ? "cursor-not-allowed" : "cursor-pointer"
+      } leading-normal`}
     >
       {`${option.value}. ${option.label}`}
     </Label>
@@ -224,13 +226,14 @@ export const Details = ({
   }
 
   return (
-    <div className="border rounded-lg bg-white h-[calc(100vh-5rem)] flex flex-col">
+    <div className="border rounded-lg bg-white dark:bg-slate-950 h-[calc(100vh-5rem)] flex flex-col shadow-sm">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-medium">题目描述</h3>
         {!isFeedbackOpen && (
           <Button
             disabled={isLoading || isSubmitting}
             isLoading={isSubmitting}
+            className="shadow-sm hover:shadow transition-all duration-200"
             onClick={submitAnswer}
           >
             提交
@@ -249,6 +252,7 @@ export const Details = ({
               variant="outline"
               disabled={isLoading || activeQuestionIndex === 0}
               onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+              className="shadow-sm hover:shadow transition-all duration-200"
             >
               上一题
             </Button>
@@ -258,6 +262,7 @@ export const Details = ({
                 isLoading || activeQuestionIndex === questions.length - 1
               }
               onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+              className="shadow-sm hover:shadow transition-all duration-200"
             >
               下一题
             </Button>
