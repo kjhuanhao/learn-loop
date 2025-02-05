@@ -15,33 +15,46 @@ export type DetailsProps = {
   submitAnswer: () => void
   isSubmitting: boolean
   isFeedbackOpen: boolean
+  isCurrentQuestionCompleted: boolean
 }
 
 type QuestionProps = {
   question: QuestionWithQuestionToGroup
+  isCurrentQuestionCompleted: boolean
 }
 
 const QuestionOption = ({
   option,
   onClick,
   children,
+  disabled,
 }: {
   option: { value: string; label: string }
   onClick: () => void
   children: React.ReactNode
+  disabled?: boolean
 }) => (
   <div
-    onClick={onClick}
-    className="flex items-center space-x-3 rounded-lg p-4 border hover:bg-muted/50 transition-colors cursor-pointer"
+    onClick={disabled ? undefined : onClick}
+    className={`flex items-center space-x-3 rounded-lg p-4 border transition-colors ${
+      disabled
+        ? "cursor-not-allowed opacity-60"
+        : "hover:bg-muted/50 cursor-pointer"
+    }`}
   >
     {children}
-    <Label className="flex-1 cursor-pointer leading-normal">
+    <Label
+      className={`flex-1 ${disabled ? "cursor-not-allowed" : "cursor-pointer"} leading-normal`}
+    >
       {`${option.value}. ${option.label}`}
     </Label>
   </div>
 )
 
-const SingleQuestion = ({ question }: QuestionProps) => {
+const SingleQuestion = ({
+  question,
+  isCurrentQuestionCompleted,
+}: QuestionProps) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string>()
   const { setUserAnswer, getUserAnswer } = useQuestionStore()
 
@@ -51,6 +64,7 @@ const SingleQuestion = ({ question }: QuestionProps) => {
   }, [question.id, getUserAnswer])
 
   const handleAnswerSelect = (value: string) => {
+    if (isCurrentQuestionCompleted) return
     setSelectedAnswer(value)
     setUserAnswer({ id: question.id, answer: [value] })
   }
@@ -60,17 +74,20 @@ const SingleQuestion = ({ question }: QuestionProps) => {
       value={selectedAnswer}
       onValueChange={handleAnswerSelect}
       className="space-y-4"
+      disabled={isCurrentQuestionCompleted}
     >
       {question.content?.options.map((option) => (
         <QuestionOption
           key={option.value}
           option={option}
           onClick={() => handleAnswerSelect(option.value)}
+          disabled={isCurrentQuestionCompleted}
         >
           <RadioGroupItem
             value={option.value}
             id={`${question.id}-${option.value}`}
             className="mt-0.5"
+            disabled={isCurrentQuestionCompleted}
           />
         </QuestionOption>
       ))}
@@ -78,7 +95,10 @@ const SingleQuestion = ({ question }: QuestionProps) => {
   )
 }
 
-const MultipleQuestion = ({ question }: QuestionProps) => {
+const MultipleQuestion = ({
+  question,
+  isCurrentQuestionCompleted,
+}: QuestionProps) => {
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([])
   const { setUserAnswer, getUserAnswer } = useQuestionStore()
 
@@ -88,6 +108,7 @@ const MultipleQuestion = ({ question }: QuestionProps) => {
   }, [question.id, getUserAnswer])
 
   const handleAnswerToggle = (value: string) => {
+    if (isCurrentQuestionCompleted) return
     const newAnswers = selectedAnswers.includes(value)
       ? selectedAnswers.filter((item) => item !== value)
       : [...selectedAnswers, value]
@@ -103,10 +124,12 @@ const MultipleQuestion = ({ question }: QuestionProps) => {
           key={option.value}
           option={option}
           onClick={() => handleAnswerToggle(option.value)}
+          disabled={isCurrentQuestionCompleted}
         >
           <Checkbox
             checked={selectedAnswers.includes(option.value)}
             value={option.value}
+            disabled={isCurrentQuestionCompleted}
           />
         </QuestionOption>
       ))}
@@ -114,7 +137,10 @@ const MultipleQuestion = ({ question }: QuestionProps) => {
   )
 }
 
-const TextQuestion = ({ question }: QuestionProps) => {
+const TextQuestion = ({
+  question,
+  isCurrentQuestionCompleted,
+}: QuestionProps) => {
   const { setUserAnswer, getUserAnswer } = useQuestionStore()
   const [answer, setAnswer] = useState<string>("")
 
@@ -126,6 +152,9 @@ const TextQuestion = ({ question }: QuestionProps) => {
   const handleAnswerChange = (value: string) => {
     setAnswer(value)
     setUserAnswer({ id: question.id, answer: value })
+  }
+  if (isCurrentQuestionCompleted) {
+    return null
   }
 
   return (
@@ -154,7 +183,7 @@ const QuestionSkeleton = () => (
 
 export const Details = ({
   question,
-
+  isCurrentQuestionCompleted,
   isLoading,
   submitAnswer,
   isSubmitting,
@@ -171,11 +200,24 @@ export const Details = ({
         <h2 className="text-2xl font-bold">{question.title}</h2>
         <div>{question.description}</div>
         <div className="py-5 gap-2 justify-between">
-          {question.type === "single" && <SingleQuestion question={question} />}
-          {question.type === "multiple" && (
-            <MultipleQuestion question={question} />
+          {question.type === "single" && (
+            <SingleQuestion
+              question={question}
+              isCurrentQuestionCompleted={isCurrentQuestionCompleted}
+            />
           )}
-          {question.type === "text" && <TextQuestion question={question} />}
+          {question.type === "multiple" && (
+            <MultipleQuestion
+              question={question}
+              isCurrentQuestionCompleted={isCurrentQuestionCompleted}
+            />
+          )}
+          {question.type === "text" && (
+            <TextQuestion
+              question={question}
+              isCurrentQuestionCompleted={isCurrentQuestionCompleted}
+            />
+          )}
         </div>
       </>
     )
@@ -186,7 +228,11 @@ export const Details = ({
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-medium">题目描述</h3>
         {!isFeedbackOpen && (
-          <Button disabled={isLoading || isSubmitting} onClick={submitAnswer}>
+          <Button
+            disabled={isLoading || isSubmitting}
+            isLoading={isSubmitting}
+            onClick={submitAnswer}
+          >
             提交
           </Button>
         )}

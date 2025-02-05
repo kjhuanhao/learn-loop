@@ -194,55 +194,62 @@ export const Study = () => {
   return (
     <div className="flex p-2 items-center gap-3 bg-gray-100 dark:bg-gray-800">
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={40}>
+        <ResizablePanel defaultSize={45} minSize={35}>
           <Details
             question={currentQuestion}
             isLoading={isPending}
             submitAnswer={submitAnswer}
             isSubmitting={isUpdatingRecord}
             isFeedbackOpen={isFeedbackOpen}
+            isCurrentQuestionCompleted={isCurrentQuestionCompleted}
           />
         </ResizablePanel>
         <ResizableHandle />
         <AnimatePresence mode="wait">
           {isFeedbackOpen && (
-            <>
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: "30%", opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                style={{ height: "100%" }}
-              >
-                <ResizablePanel defaultSize={100}>
-                  <AnswerFeedback
-                    isOpen={isFeedbackOpen}
-                    question={currentQuestion}
-                    userAnswer={
-                      currentQuestion
-                        ? (getUserAnswer(currentQuestion.id) ?? null)
-                        : null
-                    }
-                    isCorrect={isCorrect}
-                    onNext={handleNextQuestion}
-                    onMasteryChange={handleMasteryChange}
-                    isCompleted={isCurrentQuestionCompleted}
-                  />
-                </ResizablePanel>
-              </motion.div>
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: "30%", opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="h-full"
+            >
+              <ResizablePanel defaultSize={100}>
+                <AnswerFeedback
+                  isOpen={isFeedbackOpen}
+                  question={currentQuestion}
+                  userAnswer={
+                    currentQuestion
+                      ? (getUserAnswer(currentQuestion.id) ?? null)
+                      : null
+                  }
+                  isCorrect={isCorrect}
+                  onNext={handleNextQuestion}
+                  onMasteryChange={handleMasteryChange}
+                  isCompleted={isCurrentQuestionCompleted}
+                />
+              </ResizablePanel>
               <ResizableHandle />
-            </>
+            </motion.div>
           )}
         </AnimatePresence>
-        <ResizablePanel defaultSize={30}>
-          <ChatComponent
-            ref={ref}
-            getContext={() =>
-              getChatContext(currentQuestion as QuestionWithQuestionToGroup)
-            }
-            isCanChat={!isPending}
-          />
-        </ResizablePanel>
+        <motion.div
+          animate={{
+            width: isFeedbackOpen ? "25%" : "45%",
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="h-full"
+        >
+          <ResizablePanel defaultSize={100} minSize={20}>
+            <ChatComponent
+              ref={ref}
+              getContext={() =>
+                getChatContext(currentQuestion as QuestionWithQuestionToGroup)
+              }
+              isCanChat={!isPending}
+            />
+          </ResizablePanel>
+        </motion.div>
       </ResizablePanelGroup>
 
       <QuestionList
