@@ -1,50 +1,47 @@
 "use client"
 
-import { useState } from "react"
-import { Scrollbar } from "react-scrollbars-custom"
-import { Switch } from "./components/Sidebar/Switch"
-import { Search } from "./components/Sidebar/Search"
-import { SidebarItemComponent as SidebarItem } from "./components/Sidebar/SidebarItem"
-import { SidebarDialog } from "./components/Sidebar/SidebarDialog"
+import {
+  createNewFolderAction,
+  deleteFolderAction,
+  updateFolderAction,
+} from "@/actions/folder"
+import {
+  createNewGroupAction,
+  deleteGroupAction,
+  updateGroupAction,
+} from "@/actions/group"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
+import type { Folder } from "@/types/folder"
+import type { Group } from "@/types/group"
 import type {
   DialogConfig,
   ItemType,
   SidebarItem as TSidebarItem,
 } from "@/types/sidebar"
-import type { Folder } from "@/types/folder"
-import type { Group } from "@/types/group"
-import { Book, BookOpen, FolderIcon, FolderOpen, PlusIcon } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { FolderTree, GroupTree } from "./components/Sidebar/file-tree"
-import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  createNewFolderAction,
-  updateFolderAction,
-  deleteFolderAction,
-} from "@/actions/folder"
-import {
-  createNewGroupAction,
-  updateGroupAction,
-  deleteGroupAction,
-} from "@/actions/group"
-import { Button } from "@/components/ui/button"
+import { PlusIcon } from "lucide-react"
+import { useState } from "react"
+import { Scrollbar } from "react-scrollbars-custom"
+import { FolderTree, GroupTree } from "./components/Sidebar/file-tree"
+import { Search } from "./components/Sidebar/Search"
+import { SidebarDialog } from "./components/Sidebar/SidebarDialog"
+import { Switch } from "./components/Sidebar/Switch"
 
-const statusColorMap: Record<Group["status"], string> = {
-  not_started:
-    "bg-card-primary-background text-card-primary-foreground border-0",
-  in_progress:
-    "bg-card-primary-2-background text-card-primary-2-foreground border-0",
-  completed:
-    "bg-card-primary-1-background text-card-primary-1-foreground border-0",
-}
+// const statusColorMap: Record<Group["status"], string> = {
+//   not_started:
+//     "bg-card-primary-background text-card-primary-foreground border-0",
+//   in_progress:
+//     "bg-card-primary-2-background text-card-primary-2-foreground border-0",
+//   completed:
+//     "bg-card-primary-1-background text-card-primary-1-foreground border-0",
+// }
 
-const statusTextMap: Record<Group["status"], string> = {
-  not_started: "未开始",
-  in_progress: "进行中",
-  completed: "已完成",
-}
+// const statusTextMap: Record<Group["status"], string> = {
+//   not_started: "未开始",
+//   in_progress: "进行中",
+//   completed: "已完成",
+// }
 
 interface ManageSidebarProps {
   active: ItemType

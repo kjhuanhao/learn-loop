@@ -170,11 +170,11 @@ export const questionFolderRelations = relations(
 /**
  * 问题组表
  */
-export const questionGroupStatusEnum = pgEnum("status", [
-  "not_started",
-  "in_progress",
-  "completed",
-])
+// export const questionGroupStatusEnum = pgEnum("status", [
+//   "not_started",
+//   "in_progress",
+//   "completed",
+// ])
 
 export const questionGroup = pgTable("question_group", {
   id: text("id")
@@ -186,7 +186,6 @@ export const questionGroup = pgTable("question_group", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id), // 关联用户ID
-  status: questionGroupStatusEnum("status").notNull().default("not_started"), // 题组状态
   createdAt: timestamp("created_at").notNull().defaultNow(), // 创建时间
   updatedAt: timestamp("updated_at").notNull().defaultNow(), // 更新时间
 })

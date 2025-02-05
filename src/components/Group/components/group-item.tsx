@@ -1,44 +1,52 @@
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import type { questionToGroup } from "@/database/schema"
+import type { Group, QuestionToGroupWithNextReview } from "@/types/group"
 import { cn } from "@/lib/utils"
-import type { Group } from "@/types/group"
-import { QuestionGroupStatus } from "@/types/question"
+import { useMemo } from "react"
 
-type QuestionToGroup = typeof questionToGroup.$inferSelect
+// const statusColorMap: Record<QuestionGroupStatus, string> = {
+//   not_started: "bg-card-primary-background text-card-primary-foreground",
+//   in_progress: "bg-card-primary-2-background text-card-primary-2-foreground",
+//   completed: "bg-card-primary-1-background text-card-primary-1-foreground",
+// }
+
+// const statusTextMap: Record<QuestionGroupStatus, string> = {
+//   not_started: "未开始",
+//   in_progress: "进行中",
+//   completed: "已完成",
+// }
 
 interface GroupItemProps {
   group: Group
   onClick?: () => void
+  active?: boolean
 }
 
-const statusColorMap: Record<QuestionGroupStatus, string> = {
-  not_started: "bg-card-primary-background text-card-primary-foreground",
-  in_progress: "bg-card-primary-2-background text-card-primary-2-foreground",
-  completed: "bg-card-primary-1-background text-card-primary-1-foreground",
-}
+export const GroupItem = ({ group, onClick, active }: GroupItemProps) => {
+  const { name, description, tag, questionCount, questionToGroup } = group
 
-const statusTextMap: Record<QuestionGroupStatus, string> = {
-  not_started: "未开始",
-  in_progress: "进行中",
-  completed: "已完成",
-}
+  const { completedCount, progress } = useMemo(() => {
+    const now = new Date()
+    const completed = Array.isArray(questionToGroup)
+      ? questionToGroup.filter((item: QuestionToGroupWithNextReview) => {
+          const nextReviewAt = new Date(item.nextReviewAt)
+          return nextReviewAt > now
+        }).length
+      : 0
 
-export const GroupItem = ({ group, onClick }: GroupItemProps) => {
-  const { name, description, status, tag, questionCount, questionToGroup } =
-    group
-  const totalQuestions = questionCount
-  const reviewedQuestions = Array.isArray(questionToGroup)
-    ? questionToGroup.filter((item: QuestionToGroup) => item.isCompleted).length
-    : 0
-
-  const progress =
-    totalQuestions > 0 ? (reviewedQuestions / totalQuestions) * 100 : 0
+    return {
+      completedCount: completed,
+      progress: questionCount > 0 ? (completed / questionCount) * 100 : 0,
+    }
+  }, [questionToGroup, questionCount])
 
   return (
     <div
       onClick={onClick}
-      className="group flex flex-col gap-2 justify-between rounded-lg border p-4 hover:border-primary cursor-pointer transition-all"
+      className={cn(
+        "group flex flex-col gap-2 justify-between rounded-lg border p-4 hover:border-primary cursor-pointer transition-all",
+        active && "bg-primary/10"
+      )}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick?.()}
@@ -56,12 +64,12 @@ export const GroupItem = ({ group, onClick }: GroupItemProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <Badge
+              {/* <Badge
                 className={cn("text-xs font-medium", statusColorMap[status])}
                 variant="outline"
               >
                 {statusTextMap[status]}
-              </Badge>
+              </Badge> */}
             </div>
             <div className="flex items-center gap-1">
               {tag.map((t) => (
@@ -72,7 +80,7 @@ export const GroupItem = ({ group, onClick }: GroupItemProps) => {
             </div>
           </div>
           <span className="text-xs text-muted-foreground">
-            {reviewedQuestions}/{totalQuestions}
+            {completedCount}/{questionCount}
           </span>
         </div>
       </div>

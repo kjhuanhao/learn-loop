@@ -2,7 +2,7 @@
 
 import { db } from "@/utils/db"
 import { createAction } from "."
-import { questionGroup, questionToGroup } from "@/database/schema"
+import { questionGroup, questionToGroup, question } from "@/database/schema"
 import type { User } from "better-auth/types"
 import { eq, and, desc, sql } from "drizzle-orm"
 
@@ -44,7 +44,9 @@ export const getQuestionGroupListAction = async () => {
         .select({
           question_group: questionGroup,
           questionCount: sql<number>`count(${questionToGroup.questionId})::int`,
-          questions: sql<(typeof questionToGroup.$inferSelect)[]>`
+          questions: sql<
+            (typeof questionToGroup.$inferSelect & { nextReviewAt: Date })[]
+          >`
             json_agg(
               CASE
                 WHEN ${questionToGroup.questionId} IS NOT NULL
@@ -52,7 +54,8 @@ export const getQuestionGroupListAction = async () => {
                   'questionId', ${questionToGroup.questionId},
                   'groupId', ${questionToGroup.groupId},
                   'isCompleted', ${questionToGroup.isCompleted},
-                  'createdAt', ${questionToGroup.createdAt}
+                  'createdAt', ${questionToGroup.createdAt},
+                  'nextReviewAt', ${question.nextReviewAt}
                 )
               END
             ) FILTER (WHERE ${questionToGroup.questionId} IS NOT NULL)
@@ -64,6 +67,7 @@ export const getQuestionGroupListAction = async () => {
           questionToGroup,
           eq(questionGroup.id, questionToGroup.groupId)
         )
+        .leftJoin(question, eq(questionToGroup.questionId, question.id))
         .groupBy(questionGroup.id)
         .orderBy(desc(questionGroup.createdAt))
 
@@ -75,7 +79,6 @@ export const getQuestionGroupListAction = async () => {
         createdAt: group.question_group.createdAt,
         updatedAt: group.question_group.updatedAt,
         userId: group.question_group.userId,
-        status: group.question_group.status,
         questionCount: group.questionCount,
         questionToGroup: group.questions || [],
       }))

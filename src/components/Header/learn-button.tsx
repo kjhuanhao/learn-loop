@@ -1,7 +1,6 @@
 "use client"
 import { usePathname } from "next/navigation"
 import { Button } from "../ui/button"
-import Link from "next/link"
 import { useStudyTimer } from "@/hooks/use-study-timer"
 import { Play, Pause, Clock } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
@@ -40,10 +39,11 @@ export const LearnButton = () => {
       </div>
     )
   }
+  return null
 
-  return (
-    <Link href="/study">
-      <Button className="rounded-full px-6 bg-primary">开始今日学习</Button>
-    </Link>
-  )
+  // return (
+  //   <Link href="/study">
+  //     <Button className="rounded-full px-6 bg-primary">开始今日学习</Button>
+  //   </Link>
+  // )
 }

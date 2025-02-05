@@ -106,9 +106,6 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       }))
     }
 
-    // 打印原始数据
-    console.log("Heatmap: Original records", response.data)
-
     // 将记录数据转换为 Map，key 是日期，value 是当天的题目总数
     const contributionMap = new Map(
       response.data.map((record) => [
@@ -117,28 +114,11 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       ])
     )
 
-    // 打印处理后的 Map
-    console.log(
-      "Heatmap: Contribution Map",
-      Object.fromEntries(contributionMap)
-    )
-
     const result = dates.map((date) => ({
       date,
       count: contributionMap.get(dateFormatter(date)) || 0,
       tooltipText: dateFormatter(date),
     }))
-
-    // 打印有数据的日期
-    console.log(
-      "Heatmap: Days with contributions",
-      result
-        .filter((day) => day.count > 0)
-        .map((day) => ({
-          date: dateFormatter(day.date),
-          count: day.count,
-        }))
-    )
 
     return result
   }, [response?.data, isLoading, dateFormatter])
