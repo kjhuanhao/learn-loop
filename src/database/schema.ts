@@ -260,7 +260,7 @@ export const userSetting = pgTable("user_setting", {
 })
 
 /**
- * 用户学习记录表，一天存一次
+ * 用户学习记录表
  */
 export const userLearningRecord = pgTable("user_learning_record", {
   id: text("id")
@@ -270,7 +270,6 @@ export const userLearningRecord = pgTable("user_learning_record", {
     .notNull()
     .references(() => user.id), // 关联用户ID
   questionCount: integer("question_count").notNull().default(0), // 学习题目总数
-  correctCount: integer("correct_count").notNull().default(0), // 正确题目数
   reviewCount: integer("review_count").notNull().default(0), // 复习题目数
   learningTime: decimal("learning_time", { precision: 9, scale: 1 })
     .notNull()
@@ -286,6 +285,36 @@ export const userLearningRecordRelations = relations(
   ({ one }) => ({
     user: one(user, {
       fields: [userLearningRecord.userId],
+      references: [user.id],
+    }),
+  })
+)
+
+/**
+ * 每日学习记录表
+ */
+export const dailyLearningRecord = pgTable("daily_learning_record", {
+  id: text("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id), // 关联用户ID
+  learningTime: decimal("learning_time", { precision: 9, scale: 1 })
+    .notNull()
+    .default("0.0"), // 学习总时长（分钟）
+  questionCount: integer("question_count").notNull().default(0), // 学习题目总数
+  reviewCount: integer("review_count").notNull().default(0), // 复习题目数
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
+
+// 每日学习记录关联关系
+export const dailyLearningRecordRelations = relations(
+  dailyLearningRecord,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [dailyLearningRecord.userId],
       references: [user.id],
     }),
   })

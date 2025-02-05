@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import { useStudyTimer } from "@/hooks/use-study-timer"
-import { Play, Pause, RotateCcw, Clock } from "lucide-react"
+import { Play, Pause, Clock } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 export const LearnButton = () => {
@@ -36,10 +36,6 @@ export const LearnButton = () => {
           ) : (
             <Play className="w-4 h-4" />
           )}
-        </Button>
-
-        <Button variant="outline" size="sm" onClick={reset}>
-          <RotateCcw className="w-4 h-4" />
         </Button>
       </div>
     )

@@ -6,6 +6,7 @@ interface QuestionState {
   questions: QuestionWithQuestionToGroup[]
   setQuestions: (questions: QuestionWithQuestionToGroup[]) => void
   getQuestions: (id: string) => QuestionWithQuestionToGroup | undefined
+  updateQuestion: (question: QuestionWithQuestionToGroup) => void
   userAnswer: { id: string; answer: string | Option["value"][] }[]
   setUserAnswer: (answer: { id: string; answer: string[] | string }) => void
   getUserAnswer: (id: string) => string | string[] | undefined
@@ -36,5 +37,13 @@ export const useQuestionStore = create<QuestionState>()((set, get) => ({
   getUserAnswer: (id: string) => {
     const { userAnswer } = get()
     return userAnswer.find((answer) => answer.id === id)?.answer
+  },
+  updateQuestion: (question: QuestionWithQuestionToGroup) => {
+    const { questions } = get()
+    const index = questions.findIndex((item) => item.id === question.id)
+    if (index !== -1) {
+      questions[index] = question
+    }
+    set({ questions })
   },
 }))

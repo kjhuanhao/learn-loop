@@ -145,3 +145,23 @@ export const deleteGroupAction = async (groupId: string) => {
     { groupId }
   )
 }
+
+export const updateQuestionToGroupAction = async (
+  groupId: string,
+  questionId: string,
+  isCompleted: boolean
+) => {
+  return createAction({
+    actionFunc: async (user: User) => {
+      return db
+        .update(questionToGroup)
+        .set({ isCompleted })
+        .where(
+          and(
+            eq(questionToGroup.groupId, groupId),
+            eq(questionToGroup.questionId, questionId)
+          )
+        )
+    },
+  })
+}

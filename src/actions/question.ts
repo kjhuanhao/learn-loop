@@ -54,13 +54,16 @@ interface CreateNewQuestionActionProps {
 
 interface UpdateQuestionActionProps {
   id: string
-  title: string
-  content: QuestionContent
-  type: QuestionType
+  title?: string
+  content?: QuestionContent
+  type?: QuestionType
   targetFolderId?: string
   sourceGroup?: QuestionGroup[]
   targetGroups?: string[]
   description?: string
+  masteryLevel?: QuestionMasteryLevel
+  reviewCount?: number
+  nextReviewAt?: Date
 }
 
 /**
@@ -337,16 +340,31 @@ export const updateQuestionAction = async (body: UpdateQuestionActionProps) => {
       actionFunc: async (user: User) => {
         return await db.transaction(async (tx) => {
           // 1. 更新问题基本信息
-          const [updatedQuestion] = await tx
-            .update(question)
-            .set({
+          const updateFields = {
+            ...Object.entries({
               title: body.title,
               type: body.type,
               content: body.content,
               description: body.description,
               folderId: body.targetFolderId,
-              updatedAt: new Date(), // 添加更新时间
-            })
+              masteryLevel: body.masteryLevel,
+              reviewCount: body.reviewCount,
+              nextReviewAt: body.nextReviewAt,
+            }).reduce(
+              (acc, [key, value]) => {
+                if (value !== undefined) {
+                  acc[key] = value
+                }
+                return acc
+              },
+              {} as Record<string, any>
+            ),
+            updatedAt: new Date(),
+          }
+
+          const [updatedQuestion] = await tx
+            .update(question)
+            .set(updateFields)
             .where(and(eq(question.id, body.id), eq(question.userId, user.id)))
             .returning()
 
