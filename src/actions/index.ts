@@ -58,10 +58,24 @@ export const createAction = async <TInput, TOutput>(
     }
 
     if (error instanceof Error) {
+      // 获取错误堆栈信息
+      const stackLines = error.stack?.split("\n") || []
+      const errorSource = stackLines.length > 1 ? stackLines[1] : ""
+
+      // 解析错误来源信息
+      const sourceInfo = {
+        functionName: error.stack?.match(/at\s+([^\s]+)\s+/)?.[1] || "unknown",
+        filePath: errorSource.match(/\((.+?):\d+:\d+\)/)?.[1] || "unknown",
+        lineNumber: errorSource.match(/:(\d+):/)?.[1] || "unknown",
+        columnNumber: errorSource.match(/:(\d+)\)/)?.[1] || "unknown",
+      }
+      console.log(sourceInfo, "sourceInfo")
+
       Sentry.setExtra("error_details", {
         name: error.name,
         message: error.message,
         stack: error.stack,
+        source: sourceInfo,
       })
     }
 

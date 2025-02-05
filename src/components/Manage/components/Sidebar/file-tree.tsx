@@ -67,7 +67,7 @@ const BaseFileTree = ({
     <div
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between p-1 rounded-lg hover:bg-gray-100 group min-h-[36px]",
+        "flex items-center justify-between p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 group min-h-[36px]",
         {
           "bg-muted": isActive,
         },

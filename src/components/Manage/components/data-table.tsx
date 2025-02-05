@@ -79,19 +79,19 @@ export function DataTable<TData, TValue>({
 
   if (isLoading) {
     return (
-      <div className="overflow-hidden bg-white">
+      <div className="overflow-hidden">
         <ScrollArea className="h-[calc(100vh-16rem)]">
           <div className="w-full">
             <Table>
               <TableHeader className="sticky top-0">
                 <TableRow>
-                  <TableHead className="w-[40px] bg-gray-50/80 h-12 px-4">
+                  <TableHead className="w-[40px] bg-muted h-12 px-4">
                     <Skeleton className="h-4 w-4" />
                   </TableHead>
                   {columns.map((column, index) => (
                     <TableHead
                       key={index}
-                      className="bg-gray-50/80 h-12 px-4 text-xs font-medium text-gray-500 transition-colors"
+                      className="h-12 px-4 text-xs font-medium text-muted-foreground transition-colors bg-muted"
                       style={{
                         width:
                           index === 0
@@ -110,7 +110,7 @@ export function DataTable<TData, TValue>({
                 {Array.from({ length: 5 }).map((_, index) => (
                   <TableRow
                     key={index}
-                    className="border-b transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-50"
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                   >
                     <TableCell className="w-[40px] px-4">
                       <Skeleton className="h-4 w-4" />
@@ -142,13 +142,13 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="flex h-[calc(100vh-8.6rem)] flex-col overflow-hidden border">
+    <div className="flex h-[calc(100vh-8.6rem)] flex-col overflow-hidden border bg-background">
       <ScrollArea className="flex-1">
         <div className="w-full">
           <Table>
             <TableHeader className="sticky top-0 border-none">
               <TableRow>
-                <TableHead className="w-[40px] px-4">
+                <TableHead className="w-[40px] px-4 bg-muted">
                   <Checkbox
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) =>
@@ -162,7 +162,7 @@ export function DataTable<TData, TValue>({
                   headerGroup.headers.map((header, index) => (
                     <TableHead
                       key={header.id}
-                      className="h-12 px-4 text-xs font-medium text-gray-500 transition-colors border-none"
+                      className="h-12 px-4 text-xs font-medium text-muted-foreground transition-colors border-none bg-muted"
                       style={{
                         width:
                           index === 0
@@ -189,7 +189,7 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="border-b transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-50"
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                   >
                     <TableCell className="w-[40px] px-4">
                       <Checkbox
@@ -226,9 +226,9 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length + 1}
                     className="h-[200px] text-center"
                   >
-                    <div className="flex flex-col items-center justify-center space-y-2 text-gray-500">
+                    <div className="flex flex-col items-center justify-center space-y-2">
                       <svg
-                        className="h-10 w-10 text-gray-400"
+                        className="h-10 w-10 text-muted-foreground"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -241,7 +241,7 @@ export function DataTable<TData, TValue>({
                           d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                         />
                       </svg>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         暂无数据，请先添加题目
                       </p>
                     </div>
@@ -252,7 +252,7 @@ export function DataTable<TData, TValue>({
           </Table>
         </div>
       </ScrollArea>
-      <div className="flex items-center justify-between border-t bg-background px-4 py-3">
+      <div className="flex items-center justify-between border-t bg-card px-4 py-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div>每页显示</div>
           <Select
@@ -274,7 +274,7 @@ export function DataTable<TData, TValue>({
         </div>
         <div className="flex items-center gap-6 lg:gap-8">
           <div className="flex items-center gap-2 text-sm">
-            <div>第 {page} 页</div>
+            <div className="text-foreground">第 {page} 页</div>
             <div className="text-muted-foreground">共 {totalPages} 页</div>
           </div>
           <div className="flex items-center gap-2">

@@ -171,11 +171,10 @@ export const getQuestionListActionByFolderId = async (
                     'id', ${questionGroup.id},
                     'name', ${questionGroup.name},
                     'description', ${questionGroup.description},
-                    'tag', ${questionGroup.tag},
-                    'status', ${questionGroup.status}
+                    'tag', ${questionGroup.tag}
                   )
                 ) FILTER (WHERE ${questionGroup.id} IS NOT NULL),
-                '[]'
+                '[]'::json
               )
             `.as("groups"),
           })
@@ -283,11 +282,10 @@ export const getQuestionListActionByGroupId = async (
                     'id', ${questionGroup.id},
                     'name', ${questionGroup.name},
                     'description', ${questionGroup.description},
-                    'tag', ${questionGroup.tag},
-                    'status', ${questionGroup.status}
+                    'tag', ${questionGroup.tag}
                   )
                 ) FILTER (WHERE ${questionGroup.id} IS NOT NULL),
-                '[]'
+                '[]'::json
               )
             `.as("groups"),
           })
@@ -323,7 +321,6 @@ export const getQuestionListActionByGroupId = async (
         })),
         total: Number(count),
       }
-      console.log("response", response)
 
       return response
     },

@@ -1,18 +1,13 @@
 "use client"
 
 import { getFolderListAction } from "@/actions/folder"
-import { ManageSidebar } from "./sidebar"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { OperationPanel } from "./operation"
-import { useEffect, useState } from "react"
-import { SelectGroup } from "../ui/select"
-import type { Folder } from "@/types/folder"
-import {
-  getQuestionListActionByFolderId,
-  getQuestionListActionByGroupId,
-} from "@/actions/question"
 import { getQuestionGroupListAction } from "@/actions/group"
+import type { Folder } from "@/types/folder"
 import type { Group } from "@/types/group"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { OperationPanel } from "./operation"
+import { ManageSidebar } from "./sidebar"
 
 export const Manage = () => {
   const queryClient = useQueryClient()
@@ -24,6 +19,7 @@ export const Manage = () => {
     queryKey: ["folderList"],
     queryFn: getFolderListAction,
   })
+
   const { data: groupList, isPending: isGroupListLoading } = useQuery({
     queryKey: ["groupList"],
     queryFn: getQuestionGroupListAction,
@@ -40,7 +36,6 @@ export const Manage = () => {
     },
     ...(folderList?.success ? (folderList.data as Folder[]) : []),
   ] as Folder[]
-  console.log(groups, "groups")
 
   const handleQuestionsDeleted = () => {
     queryClient.invalidateQueries({ queryKey: ["folderList"] })

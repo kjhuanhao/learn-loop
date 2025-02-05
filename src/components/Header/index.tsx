@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HeaderAuth } from "@/components/Header/header-auth"
 import { LearnButton } from "./learn-button"
+import { ThemeSwitcher } from "../theme-switcher"
 
 const Header = async () => {
   const session = await auth.api.getSession({
@@ -26,7 +27,7 @@ const Header = async () => {
             {/* Add search or other elements here */}
           </div>
           <nav className="flex items-center space-x-2">
-            {/* <ThemeSwitcher /> */}
+            <ThemeSwitcher />
             <LearnButton />
             <HeaderAuth user={user} />
           </nav>

@@ -78,12 +78,12 @@ export const TodayDataPanel = ({
           <h3 className="text-lg font-medium text-card-foreground">
             今日学习概览
           </h3>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger>
               <Share2 className="w-4 h-4 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>分享</TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       </div>
 

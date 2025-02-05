@@ -39,9 +39,13 @@ const ToolbarButton = ({
       size="sm"
       onClick={onClick}
       disabled={disabled}
-      className={`h-8 w-8 p-1 hover:bg-slate-100 ${
-        active ? "bg-slate-100 text-slate-900" : "text-slate-600"
-      }`}
+      className={cn(
+        "h-8 w-8 p-1",
+        "hover:bg-slate-100 dark:hover:bg-slate-800",
+        active
+          ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+          : "text-slate-600 dark:text-slate-400"
+      )}
       aria-label={label}
     >
       {children}
@@ -78,7 +82,7 @@ export function QuestionEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose-base focus:outline-none h-full max-w-none break-words",
+          "prose prose-sm sm:prose-base dark:prose-invert focus:outline-none h-full max-w-none break-words dark:text-slate-100",
       },
     },
   })
@@ -113,10 +117,13 @@ export function QuestionEditor({
 
   return (
     <div
-      className={cn("w-full rounded-lg border border-slate-200", className)}
+      className={cn(
+        "w-full rounded-lg border border-slate-200 dark:border-slate-800",
+        className
+      )}
       style={{ maxWidth: maxWidth || "100%" }}
     >
-      <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2 bg-white sticky top-0 z-10">
+      <div className="flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800 p-2 bg-white dark:bg-slate-950 sticky top-0 z-10">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -180,10 +187,10 @@ export function QuestionEditor({
       </div>
 
       <div
-        className="overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent hover:scrollbar-thumb-slate-300"
+        className="overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent hover:scrollbar-thumb-slate-300 dark:hover:scrollbar-thumb-slate-600"
         style={{ height: maxHeight }}
       >
-        <div className="p-4 h-full">
+        <div className="p-4 h-full bg-white dark:bg-slate-950">
           <EditorContent editor={editor} className="h-full" />
         </div>
       </div>

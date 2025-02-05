@@ -92,9 +92,23 @@ export const OperationPanel = ({
     refetch: refetchFolder,
     error: folderError,
   } = useQuery({
-    queryKey: ["questionList", selectedFolderId, page, pageSize],
-    queryFn: () =>
-      getQuestionListActionByFolderId(selectedFolderId, page, pageSize),
+    queryKey: ["questionList", targetFolderId, page, pageSize],
+    queryFn: async () => {
+      try {
+        const response = await getQuestionListActionByFolderId(
+          targetFolderId === "" ? undefined : targetFolderId,
+          page,
+          pageSize
+        )
+        if (!response?.success) {
+          throw new Error("获取文件夹数据失败")
+        }
+        return response
+      } catch (error) {
+        console.error("获取文件夹数据失败:", error)
+        throw error
+      }
+    },
     enabled: active === "folder",
   })
 
@@ -107,14 +121,18 @@ export const OperationPanel = ({
   } = useQuery({
     queryKey: ["groupQuestionList", selectedGroupId, page, pageSize],
     queryFn: async () => {
-      if (!selectedGroupId)
+      if (!selectedGroupId) {
         return { success: true, data: { data: [], total: 0 } }
+      }
       try {
         const response = await getQuestionListActionByGroupId(
-          selectedGroupId,
+          selectedGroupId === "" ? undefined : selectedGroupId,
           page,
           pageSize
         )
+        if (!response?.success) {
+          throw new Error("获取题组数据失败")
+        }
         return response
       } catch (error) {
         console.error("获取题组数据失败:", error)
@@ -237,14 +255,14 @@ export const OperationPanel = ({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex gap-4 w-full justify-between items-center p-4 border-gray-200">
+      <div className="flex gap-4 w-full justify-between items-center p-4 border-b border-border bg-card">
         <div className="flex gap-2 items-center min-w-0">
-          <div className="text-lg font-bold truncate max-w-[300px]">
+          <div className="text-lg font-bold truncate max-w-[300px] text-foreground">
             {active === "folder"
               ? selectedFolder?.name || "全部题目"
               : selectedGroup?.name || "未选择题目组"}
           </div>
-          <div className="text-sm text-gray-500 flex-shrink-0">
+          <div className="text-sm text-muted-foreground flex-shrink-0">
             {result.total} 个题目
           </div>
           {Object.keys(rowSelection).length > 0 && (
@@ -261,7 +279,7 @@ export const OperationPanel = ({
                 variant="destructive"
                 size="sm"
                 onClick={handleBatchDelete}
-                isLoading={isDeleting}
+                disabled={isDeleting}
               >
                 {active === "group" ? "从题组移除" : "删除选中"}
               </Button>
@@ -271,13 +289,12 @@ export const OperationPanel = ({
                     加入到题组
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="bg-popover">
                   {groups.map((group) => (
                     <DropdownMenuItem
                       key={group.id}
                       onClick={() => {
                         selectedQuestions.forEach((question) => {
-                          // 获取当前题目所属的组，排除目标组，然后添加目标组
                           const existingGroupIds = (question.groups || [])
                             .map((g) => g.id)
                             .filter((id) => id !== group.id)
@@ -305,6 +322,7 @@ export const OperationPanel = ({
                         }
                         setRowSelection({})
                       }}
+                      className="cursor-pointer hover:bg-accent"
                     >
                       {group.name}
                     </DropdownMenuItem>
@@ -317,7 +335,7 @@ export const OperationPanel = ({
                     移动到文件夹
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="bg-popover">
                   {folders.map((folder) => (
                     <DropdownMenuItem
                       key={folder.id}
@@ -348,6 +366,7 @@ export const OperationPanel = ({
                         }
                         setRowSelection({})
                       }}
+                      className="cursor-pointer hover:bg-accent"
                     >
                       {folder.name}
                     </DropdownMenuItem>
@@ -357,7 +376,7 @@ export const OperationPanel = ({
             </>
           )}
           <Button variant="outline" size="icon">
-            <Filter className="w-4 h-4" />
+            <Filter className="w-4 h-4 text-foreground" />
           </Button>
           <CreateNewQuestion
             folders={folders}

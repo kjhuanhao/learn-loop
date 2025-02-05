@@ -84,7 +84,7 @@ export const ChatComponent = forwardRef<
   return (
     <>
       {isShowIndicator && (
-        <div className="w-full text-primary-1 px-2 font-semibold text-xl border rounded-lg h-[calc(100vh-5rem)] bg-white flex flex-col gap-2 justify-center items-center">
+        <div className="w-full text-primary-1 px-2 font-semibold text-xl border rounded-lg h-[calc(100vh-5rem)] bg-white dark:bg-slate-950 flex flex-col gap-2 justify-center items-center">
           <BotIcon className="w-10 h-10" />
           <span>AI</span>
         </div>
@@ -93,13 +93,13 @@ export const ChatComponent = forwardRef<
         className={cn(
           "relative",
           !isCanChat &&
-            "after:absolute after:inset-0 after:bg-white/60 after:cursor-not-allowed"
+            "after:absolute after:inset-0 after:bg-white/60 dark:after:bg-slate-950/60 after:cursor-not-allowed"
         )}
       >
         <Chat
           ref={chatRef}
           className={cn(
-            "h-[calc(100vh-5rem)] border bg-white rounded-lg p-3",
+            "h-[calc(100vh-5rem)] border bg-white dark:bg-slate-950 rounded-lg p-3",
             !isCanChat && "pointer-events-none opacity-70"
           )}
           messages={messages}

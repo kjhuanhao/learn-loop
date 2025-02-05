@@ -218,15 +218,9 @@ export const questionToGroup = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(), // 创建时间
   },
   (table) => {
-    return [
-      {
-        pk: primaryKey({ columns: [table.questionId, table.groupId] }),
-        pkWithCustomName: primaryKey({
-          name: "question_to_group_pk",
-          columns: [table.questionId, table.groupId],
-        }),
-      },
-    ]
+    return {
+      pk: primaryKey({ columns: [table.questionId, table.groupId] }),
+    }
   }
 )
 

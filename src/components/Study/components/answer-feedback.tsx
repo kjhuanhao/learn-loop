@@ -90,7 +90,7 @@ export const AnswerFeedback = ({
   )
 
   return (
-    <div className="border rounded-lg bg-white h-[calc(100vh-5rem)] flex flex-col">
+    <div className="border rounded-lg bg-white dark:bg-slate-950 h-[calc(100vh-5rem)] flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-medium">答题反馈</h3>
         {isOpen && (
