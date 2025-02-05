@@ -74,8 +74,13 @@ export const QuestionList = ({
   const { questions } = useQuestionStore()
   const [isOpen, setIsOpen] = useState(false)
   const totalQuestions = questions.length
-  const reviewedQuestions = questions.filter(
-    (item) => item.questionToGroup.isCompleted
+  const now = new Date()
+  const computeIsCompleted = (nextReviewAt: Date) => {
+    return nextReviewAt > now
+  }
+
+  const reviewedQuestions = questions.filter((item) =>
+    computeIsCompleted(new Date(item.nextReviewAt))
   ).length
 
   const progress =

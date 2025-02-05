@@ -8,10 +8,59 @@ import { TodayDataPanel } from "./today"
 import { QuestionGroup } from "@/components/Group"
 import { AnimatePresence, motion } from "motion/react"
 import { useEffect, useState } from "react"
+import { useRecords } from "@/hooks/use-records"
+
+interface LearningRecord {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  userId: string
+  learningTime: string
+  questionCount: number
+  reviewCount: number
+  continuousDay?: number
+}
+
+interface ActionResponse<T> {
+  data: T
+}
+
+interface DisplayData {
+  todayTotal: number
+  yesterdayTotal: number
+  todayTime: string
+  yesterdayTime: string
+  totalTime: string
+  continuousDay: number
+}
+
+interface DiffData {
+  totalDiff: string
+  timeDiff: string
+  continuousDiff: string
+}
 
 interface DataPanelProps {
   activeIndex: number
   setActiveIndex: (index: number) => void
+}
+
+// 计算今日与昨日的数据差异
+const calculateDiff = (today: number, yesterday: number) => {
+  const diff = today - yesterday
+  return diff >= 0 ? `+${diff}` : `${diff}`
+}
+
+// 计算时间差异（小时）
+const calculateTimeDiff = (today: string, yesterday: string) => {
+  const diffMinutes = parseFloat(today) - parseFloat(yesterday)
+  const diffHours = diffMinutes / 60
+  return diffHours >= 0 ? `+${diffHours.toFixed(1)}` : `${diffHours.toFixed(1)}`
+}
+
+// 将分钟转换为小时，保留一位小数
+const minutesToHours = (minutes: string) => {
+  return (parseFloat(minutes) / 60).toFixed(1)
 }
 
 const variants = {
@@ -37,6 +86,55 @@ export const DataPanel = ({ activeIndex, setActiveIndex }: DataPanelProps) => {
     null
   )
 
+  const { data: response, isLoading } = useRecords()
+
+  const records = response?.data || []
+
+  const defaultRecord = {
+    id: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: "",
+    questionCount: 0,
+    reviewCount: 0,
+    learningTime: "0",
+    continuousDay: 0,
+  }
+
+  const todayData = records[0] || defaultRecord
+  const yesterdayData = records[1] || defaultRecord
+
+  // 计算展示数据
+  const displayData: DisplayData = {
+    todayTotal: todayData.questionCount + todayData.reviewCount,
+    yesterdayTotal: yesterdayData.questionCount + yesterdayData.reviewCount,
+    todayTime: minutesToHours(todayData.learningTime),
+    yesterdayTime: minutesToHours(yesterdayData.learningTime),
+    totalTime: minutesToHours(
+      records
+        .reduce(
+          (acc: number, curr: LearningRecord) =>
+            acc + parseFloat(curr.learningTime),
+          0
+        )
+        .toString()
+    ),
+    continuousDay: todayData.continuousDay || 0,
+  }
+
+  // 计算差异
+  const diffData: DiffData = {
+    totalDiff: calculateDiff(
+      displayData.todayTotal,
+      displayData.yesterdayTotal
+    ),
+    timeDiff: calculateTimeDiff(
+      todayData.learningTime,
+      yesterdayData.learningTime
+    ),
+    continuousDiff: "+1",
+  }
+
   // 预加载组件
   useEffect(() => {
     const preloadComponents = async () => {
@@ -52,7 +150,11 @@ export const DataPanel = ({ activeIndex, setActiveIndex }: DataPanelProps) => {
 
   return (
     <div className="space-y-4">
-      <TodayDataPanel />
+      <TodayDataPanel
+        displayData={displayData}
+        diffData={diffData}
+        isLoading={isLoading}
+      />
       <SwitchPanelButton
         panels={[
           {

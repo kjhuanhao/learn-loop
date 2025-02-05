@@ -121,62 +121,63 @@ export const Study = () => {
   })
 
   // 处理熟练度变化
-  const { mutateAsync: handleMasteryChange } = useMutation({
-    mutationFn: async (
-      mastery: (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
-    ) => {
-      if (!currentQuestion) {
-        toast({
-          title: "题目处理异常",
-          variant: "destructive",
-        })
-        return false
-      }
-
-      const { nextReviewDate, isCompleted } = computeReview(
-        currentQuestion,
-        mastery
-      )
-      const userAnswer = getUserStringAnswer(currentQuestion.id)
-      const answer = userAnswer || undefined
-      const storeAnswer = userAnswer ?? null
-
-      try {
-        // 对题目的状态进行更新
-        await updateQuestionAction({
-          id: currentQuestion.id,
-          masteryLevel: mastery,
-          reviewCount: currentQuestion.reviewCount + 1,
-          nextReviewAt: nextReviewDate,
-          lastAnswer: answer,
-        })
-
-        // 对题组状态进行更新
-        if (isCompleted) {
-          await updateQuestionToGroupAction(
-            currentQuestion.questionToGroup.groupId,
-            currentQuestion.id,
-            isCompleted
-          )
+  const { mutateAsync: handleMasteryChange, isPending: isUpdatingMastery } =
+    useMutation({
+      mutationFn: async (
+        mastery: (typeof QuestionMasteryLevelEnum)[keyof typeof QuestionMasteryLevelEnum]
+      ) => {
+        if (!currentQuestion) {
+          toast({
+            title: "题目处理异常",
+            variant: "destructive",
+          })
+          return false
         }
-        updateQuestion({
-          ...currentQuestion,
-          masteryLevel: mastery,
-          reviewCount: currentQuestion.reviewCount + 1,
-          nextReviewAt: nextReviewDate,
-          lastAnswer: storeAnswer,
-        })
 
-        return true
-      } catch (error) {
-        toast({
-          title: "题目状态更新失败",
-          variant: "destructive",
-        })
-        return false
-      }
-    },
-  })
+        const { nextReviewDate, isCompleted } = computeReview(
+          currentQuestion,
+          mastery
+        )
+        const userAnswer = getUserStringAnswer(currentQuestion.id)
+        const answer = userAnswer || undefined
+        const storeAnswer = userAnswer ?? null
+
+        try {
+          // 对题目的状态进行更新
+          await updateQuestionAction({
+            id: currentQuestion.id,
+            masteryLevel: mastery,
+            reviewCount: currentQuestion.reviewCount + 1,
+            nextReviewAt: nextReviewDate,
+            lastAnswer: answer,
+          })
+
+          // 对题组状态进行更新
+          if (isCompleted) {
+            await updateQuestionToGroupAction(
+              currentQuestion.questionToGroup.groupId,
+              currentQuestion.id,
+              isCompleted
+            )
+          }
+          updateQuestion({
+            ...currentQuestion,
+            masteryLevel: mastery,
+            reviewCount: currentQuestion.reviewCount + 1,
+            nextReviewAt: nextReviewDate,
+            lastAnswer: storeAnswer,
+          })
+
+          return true
+        } catch (error) {
+          toast({
+            title: "题目状态更新失败",
+            variant: "destructive",
+          })
+          return false
+        }
+      },
+    })
 
   useEffect(() => {
     setCurrentQuestion(questions[activeQuestionIndex])
@@ -227,6 +228,7 @@ export const Study = () => {
                   onNext={handleNextQuestion}
                   onMasteryChange={handleMasteryChange}
                   isCompleted={isCurrentQuestionCompleted}
+                  isUpdatingMastery={isUpdatingMastery}
                 />
               </ResizablePanel>
               <ResizableHandle />

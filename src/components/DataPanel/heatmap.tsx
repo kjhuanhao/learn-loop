@@ -1,7 +1,13 @@
 "use client"
 
 import React, { useMemo } from "react"
-import { format, eachDayOfInterval, subDays } from "date-fns"
+import {
+  format,
+  eachDayOfInterval,
+  subDays,
+  startOfMonth,
+  isSameMonth,
+} from "date-fns"
 import { Info } from "lucide-react"
 import {
   Tooltip,
@@ -9,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useRecords } from "@/hooks/use-records"
 
 interface Contribution {
   date: Date
@@ -22,10 +29,6 @@ interface ContributionDay {
 }
 
 interface HeatmapProps {
-  /**
-   * 开始日期到结束日期的贡献数据
-   */
-  data?: Contribution[]
   /**
    * 热力图标题
    * @default "学习记录"
@@ -53,13 +56,36 @@ interface HeatmapProps {
 }
 
 export const Heatmap: React.FC<HeatmapProps> = ({
-  data,
   title = "学习记录",
   tooltipText = "记录每日学习题目数量",
   dateFormatter = (date: Date) => format(date, "yyyy-MM-dd"),
   tooltipFormatter = (count: number) => `${count} 题`,
   className = "",
 }) => {
+  const { data: response, isLoading } = useRecords()
+
+  // 生成月份标签数据
+  const monthLabels = useMemo(() => {
+    const today = new Date()
+    const oneYearAgo = subDays(today, 365)
+    const dates = eachDayOfInterval({ start: oneYearAgo, end: today })
+
+    const months: { text: string; weekIndex: number }[] = []
+    let currentMonth: Date | null = null
+
+    dates.forEach((date, index) => {
+      if (!currentMonth || !isSameMonth(currentMonth, date)) {
+        currentMonth = date
+        months.push({
+          text: format(date, "M月"),
+          weekIndex: Math.floor(index / 7),
+        })
+      }
+    })
+
+    return months
+  }, [])
+
   // 生成过去一年的日期数据
   const contributionData = useMemo(() => {
     const today = new Date()
@@ -70,33 +96,59 @@ export const Heatmap: React.FC<HeatmapProps> = ({
       end: today,
     })
 
-    // 如果没有提供数据，生成随机数据
-    if (!data) {
+    // 如果正在加载或没有数据，返回空数据
+    if (isLoading || !response?.data) {
+      console.log("Heatmap: Loading or no data")
       return dates.map((date) => ({
         date,
-        count: Math.floor(Math.random() * 10),
+        count: 0,
         tooltipText: dateFormatter(date),
       }))
     }
 
-    // 将提供的数据转换为 Map 以便快速查找
+    // 打印原始数据
+    console.log("Heatmap: Original records", response.data)
+
+    // 将记录数据转换为 Map，key 是日期，value 是当天的题目总数
     const contributionMap = new Map(
-      data.map((item) => [dateFormatter(item.date), item.count])
+      response.data.map((record) => [
+        dateFormatter(new Date(record.createdAt)),
+        record.questionCount + record.reviewCount,
+      ])
     )
 
-    return dates.map((date) => ({
+    // 打印处理后的 Map
+    console.log(
+      "Heatmap: Contribution Map",
+      Object.fromEntries(contributionMap)
+    )
+
+    const result = dates.map((date) => ({
       date,
       count: contributionMap.get(dateFormatter(date)) || 0,
       tooltipText: dateFormatter(date),
     }))
-  }, [data, dateFormatter])
+
+    // 打印有数据的日期
+    console.log(
+      "Heatmap: Days with contributions",
+      result
+        .filter((day) => day.count > 0)
+        .map((day) => ({
+          date: dateFormatter(day.date),
+          count: day.count,
+        }))
+    )
+
+    return result
+  }, [response?.data, isLoading, dateFormatter])
 
   // 获取贡献度对应的样式类名
   const getContributionClassName = (count: number): string => {
     if (count === 0) return "bg-muted"
-    if (count <= 2) return "bg-primary/20"
-    if (count <= 4) return "bg-primary/40"
-    if (count <= 6) return "bg-primary/70"
+    if (count <= 5) return "bg-primary/20"
+    if (count <= 10) return "bg-primary/40"
+    if (count <= 15) return "bg-primary/70"
     return "bg-primary"
   }
 
@@ -132,49 +184,94 @@ export const Heatmap: React.FC<HeatmapProps> = ({
 
       {/* 可滚动容器 */}
       <div className="overflow-x-auto pb-4">
-        <div
-          className="grid grid-flow-col gap-1"
-          style={{
-            width: "max-content",
-            minWidth: "100%",
-            gridTemplateColumns: `repeat(${totalWeeks}, minmax(auto, 1fr))`,
-          }}
-        >
-          {/* 周数据 */}
-          {Array.from({ length: totalWeeks }).map((_, weekIndex) => (
-            <div key={weekIndex} className="grid grid-rows-7 gap-1">
-              {Array.from({ length: 7 }).map((_, dayIndex) => {
-                const dataIndex = weekIndex * 7 + dayIndex
-                const dayData = contributionData[dataIndex]
+        <div className="relative">
+          {/* 月份标签 */}
+          <div
+            className="grid grid-flow-col gap-1 mb-2 ml-6"
+            style={{
+              width: "max-content",
+              minWidth: "100%",
+              gridTemplateColumns: `repeat(${totalWeeks}, minmax(auto, 1fr))`,
+            }}
+          >
+            {monthLabels.map((month, index) => (
+              <div
+                key={`month-${index}`}
+                className="text-xs text-muted-foreground"
+                style={{
+                  gridColumnStart: month.weekIndex + 1,
+                }}
+              >
+                {month.text}
+              </div>
+            ))}
+          </div>
 
-                if (!dayData)
-                  return (
-                    <div
-                      key={`empty-${weekIndex}-${dayIndex}`}
-                      className="w-3 h-3 rounded-sm bg-muted"
-                    />
-                  )
-
-                return (
-                  <Tooltip key={`day-${weekIndex}-${dayIndex}`}>
-                    <TooltipTrigger>
-                      <div
-                        className={`w-3 h-3 rounded-sm ${getContributionClassName(dayData.count)}`}
-                        role="gridcell"
-                        aria-label={`${dayData.tooltipText}: ${tooltipFormatter(dayData.count)}`}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="text-xs">
-                        <div>{dayData.tooltipText}</div>
-                        <div>{tooltipFormatter(dayData.count)}</div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                )
-              })}
+          <div className="flex gap-2">
+            {/* 星期标签 */}
+            <div className="flex flex-col justify-between py-[2px] text-xs text-muted-foreground h-[116px]">
+              <div>一</div>
+              <div>二</div>
+              <div>三</div>
+              <div>四</div>
+              <div>五</div>
+              <div>六</div>
+              <div>日</div>
             </div>
-          ))}
+
+            {/* 热力图网格 */}
+            <div
+              className="grid grid-flow-col gap-1"
+              style={{
+                width: "max-content",
+                minWidth: "calc(100% - 1.5rem)",
+                gridTemplateColumns: `repeat(${totalWeeks}, minmax(auto, 1fr))`,
+              }}
+              role="grid"
+              aria-label="学习记录热力图"
+            >
+              {/* 周数据 */}
+              {Array.from({ length: totalWeeks }).map((_, weekIndex) => (
+                <div
+                  key={weekIndex}
+                  className="grid grid-rows-7 gap-1"
+                  role="row"
+                >
+                  {Array.from({ length: 7 }).map((_, dayIndex) => {
+                    const dataIndex = weekIndex * 7 + dayIndex
+                    const dayData = contributionData[dataIndex]
+
+                    if (!dayData)
+                      return (
+                        <div
+                          key={`empty-${weekIndex}-${dayIndex}`}
+                          className="w-3 h-3 rounded-sm bg-muted"
+                          role="gridcell"
+                        />
+                      )
+
+                    return (
+                      <Tooltip key={`day-${weekIndex}-${dayIndex}`}>
+                        <TooltipTrigger>
+                          <div
+                            className={`w-3 h-3 rounded-sm ${getContributionClassName(dayData.count)}`}
+                            role="gridcell"
+                            aria-label={`${dayData.tooltipText}: ${tooltipFormatter(dayData.count)}`}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-xs">
+                            <div>{dayData.tooltipText}</div>
+                            <div>{tooltipFormatter(dayData.count)}</div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

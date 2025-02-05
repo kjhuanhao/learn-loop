@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { useQuestionStore } from "@/stores/questionSlice"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 export type DetailsProps = {
   question: QuestionWithQuestionToGroup | null

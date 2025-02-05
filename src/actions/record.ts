@@ -14,6 +14,22 @@ interface CreateDailyLearningRecord {
 }
 
 /**
+ * 获取用户所有的学习记录
+ * @returns
+ */
+export const getAllTodayLearningRecord = async () => {
+  return createAction({
+    actionFunc: async (user) => {
+      const record = await db
+        .select()
+        .from(dailyLearningRecord)
+        .where(eq(dailyLearningRecord.userId, user.id))
+
+      return record
+    },
+  })
+}
+/**
  * 获取今日学习记录
  */
 export const getTodayLearningRecord = async () => {
@@ -42,8 +58,7 @@ export const getTodayLearningRecord = async () => {
  * 创建或更新今日学习记录
  */
 export const upsertTodayLearningRecordWithTime = async (
-  learningTime: string,
-  continuousDay?: string
+  learningTime: string
 ) => {
   return createAction({
     actionFunc: async (user) => {

@@ -10,7 +10,6 @@ import {
   YAxis,
   Tooltip,
 } from "recharts"
-
 import {
   Card,
   CardContent,
@@ -18,55 +17,99 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useRecords } from "@/hooks/use-records"
 
-// Mock 数据生成函数
-const generateMockData = () => {
-  const data = []
-  const baseDate = new Date("2024-01-01") // 使用固定的基准日期
+interface LearningRecord {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  userId: string
+  learningTime: string
+  questionCount: number
+  reviewCount: number
+  continuousDay?: number
+}
 
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(baseDate)
-    date.setDate(date.getDate() + (29 - i))
-    // 使用固定的随机种子
-    const day = 29 - i
-    data.push({
-      date: date.toISOString().split("T")[0],
-      questions: ((day * 17) % 15) + 5, // 5-20 之间
-      reviews: ((day * 23) % 20) + 10, // 10-30 之间
-      time: ((day * 31) % 90) + 30, // 30-120 之间
-    })
-  }
-  return data
+interface ChartData {
+  date: string
+  questions: number
+  time: number
+}
+
+interface ActionResponse<T> {
+  data: T
 }
 
 const chartConfig = {
   questions: {
-    label: "学习&复习数",
+    label: "学习题目数",
     color: "hsl(var(--chart-1))",
   },
-  reviews: {
+  time: {
     label: "学习时长(小时)",
     color: "hsl(var(--chart-2))",
   },
-  time: {
-    label: "摆烂情况",
-    color: "hsl(var(--chart-3))",
-  },
 } as const
+
+// 将分钟转换为小时，保留一位小数
+const minutesToHours = (minutes: string) => {
+  return parseFloat((parseFloat(minutes) / 60).toFixed(1))
+}
 
 export const Chart = () => {
   const [activeMetric, setActiveMetric] =
     React.useState<keyof typeof chartConfig>("questions")
-  const learningData = React.useMemo(() => generateMockData(), [])
+
+  const { data: response, isLoading } = useRecords()
+
+  const records = response?.data || []
+
+  const learningData = React.useMemo(() => {
+    if (!records.length) return []
+
+    // 按日期降序排序
+    const sortedRecords = [...records].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+
+    // 只取最近30天的数据
+    const recentRecords = sortedRecords.slice(0, 30)
+
+    return recentRecords.map((record) => ({
+      date: new Date(record.createdAt).toISOString().split("T")[0],
+      questions: record.questionCount + record.reviewCount,
+      time: minutesToHours(record.learningTime),
+    }))
+  }, [records])
 
   const total = React.useMemo(
     () => ({
       questions: learningData.reduce((acc, curr) => acc + curr.questions, 0),
-      reviews: learningData.reduce((acc, curr) => acc + curr.reviews, 0),
       time: learningData.reduce((acc, curr) => acc + curr.time, 0),
     }),
     [learningData]
   )
+
+  if (isLoading) {
+    return (
+      <Card className="w-full rounded-2xl">
+        <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+          <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+            <div className="h-6 w-32 bg-muted/50 rounded animate-pulse" />
+            <div className="h-4 w-48 bg-muted/50 rounded animate-pulse" />
+          </div>
+          <div className="flex flex-wrap">
+            <div className="h-24 w-40 bg-muted/50 rounded animate-pulse" />
+            <div className="h-24 w-40 bg-muted/50 rounded animate-pulse" />
+          </div>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="h-[250px] w-full bg-muted/50 rounded animate-pulse" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="w-full rounded-2xl">
@@ -140,6 +183,11 @@ export const Chart = () => {
                   fontSize: "0.75rem",
                   fill: "hsl(var(--muted-foreground))",
                 }}
+                tickFormatter={(value) =>
+                  activeMetric === "questions"
+                    ? Math.round(value).toString()
+                    : value.toFixed(1)
+                }
               />
               <Tooltip
                 contentStyle={{
@@ -156,7 +204,9 @@ export const Chart = () => {
                 }}
                 formatter={(value: number, name: string) => {
                   const config = chartConfig[name as keyof typeof chartConfig]
-                  return [value, config.label]
+                  const formattedValue =
+                    name === "questions" ? Math.round(value) : value.toFixed(1)
+                  return [formattedValue, config.label]
                 }}
               />
               <Line
