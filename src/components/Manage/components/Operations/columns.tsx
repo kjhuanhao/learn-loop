@@ -64,7 +64,7 @@ export const createColumns = ({
         content: question.content || { options: [], correct: [] },
         type: question.type,
         description: question.description || undefined,
-        targetGroups: [groupId],
+        targetGroups: [...question.groups.map((g) => g.id), groupId],
       })
 
       if (response.success) {

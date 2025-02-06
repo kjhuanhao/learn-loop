@@ -184,7 +184,13 @@ export const Study = () => {
   }, [activeQuestionIndex, questions])
 
   const handleNextQuestion = () => {
-    if (activeQuestionIndex < questions.length - 1) {
+    if (activeQuestionIndex === questions.length - 1) {
+      toast({
+        title: "已经是最后一题了",
+        variant: "warning",
+      })
+      return
+    } else if (activeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex(activeQuestionIndex + 1)
     } else {
       setActiveQuestionIndex(activeQuestionIndex - 1)

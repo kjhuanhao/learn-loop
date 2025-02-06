@@ -97,7 +97,7 @@ export const QuestionList = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.3 }}
-            className="relative p-3 w-[400px] h-screen bg-white rounded-lg shadow-lg bg-secondary"
+            className="relative p-3 w-[400px] h-screen rounded-lg shadow-lg bg-secondary"
           >
             <h3 className="font-medium">题目列表</h3>
             <div className="flex items-center gap-2 mt-4">

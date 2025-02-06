@@ -38,7 +38,7 @@ const QuestionOption = ({
     onClick={disabled ? undefined : onClick}
     className={`flex items-center space-x-3 rounded-lg p-4 border transition-all duration-200 ${
       disabled
-        ? "cursor-not-allowed opacity-60 bg-gray-50"
+        ? "cursor-not-allowed opacity-60 bg-gray-50 dark:bg-gray-800"
         : "hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 active:bg-gray-100 cursor-pointer shadow-sm hover:shadow-md"
     }`}
   >
